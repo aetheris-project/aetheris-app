@@ -74,12 +74,17 @@ export async function GET(request: Request) {
     });
   }
 
-  // 2. PostgreSQL
+  // 2. PostgreSQL (best effort: branding must serve even if the store is down)
   let config = DEFAULT_CONFIG;
-  const organization = await prisma.organization.findUnique({
-    where: { slug: orgSlug },
-    include: { whitelabel: true }
-  });
+  let organization: Awaited<ReturnType<typeof prisma.organization.findUnique>> = null;
+  try {
+    organization = await prisma.organization.findUnique({
+      where: { slug: orgSlug },
+      include: { whitelabel: true }
+    });
+  } catch (cause) {
+    console.error("[aetheris] whitelabel database read failed", cause);
+  }
 
   if (organization?.whitelabel) {
     // Prisma exposes Json columns as JsonValue; validate shape before use.

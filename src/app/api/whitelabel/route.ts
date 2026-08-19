@@ -76,7 +76,14 @@ export async function GET(request: Request) {
 
   // 2. PostgreSQL (best effort: branding must serve even if the store is down)
   let config = DEFAULT_CONFIG;
-  let organization: Awaited<ReturnType<typeof prisma.organization.findUnique>> = null;
+  let organization: {
+    whitelabel?: {
+      brand: unknown;
+      theme: unknown;
+      navigation: unknown;
+      modules: unknown;
+    } | null;
+  } | null = null;
   try {
     organization = await prisma.organization.findUnique({
       where: { slug: orgSlug },

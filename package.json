@@ -12,6 +12,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:seed": "tsx prisma/seed.ts",
+    "test": "tsx --test src/lib/__tests__/crypto.test.ts src/lib/__tests__/queue.test.ts",
     "worker": "tsx src/workers/index.ts",
     "deploy": "bash bin/install.sh --yes"
   },

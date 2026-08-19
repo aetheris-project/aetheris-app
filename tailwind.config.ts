@@ -11,6 +11,7 @@ const config: Config = {
         edge: "rgb(var(--aetheris-border) / <alpha-value>)",
         ink: "rgb(var(--aetheris-fg) / <alpha-value>)",
         muted: "rgb(var(--aetheris-muted) / <alpha-value>)",
+        faint: "rgb(var(--aetheris-faint) / <alpha-value>)",
         accent: {
           DEFAULT: "rgb(var(--aetheris-accent) / <alpha-value>)",
           strong: "rgb(var(--aetheris-accent-strong) / <alpha-value>)",

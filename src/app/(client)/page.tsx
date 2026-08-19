@@ -23,9 +23,9 @@ export default async function ClientPortalPage() {
         </a>
       </header>
 
-      <div className="mt-8 overflow-hidden rounded-xl border border-edge">
+      <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08]">
         <table className="w-full text-left text-sm">
-          <thead className="bg-surface text-xs text-muted">
+          <thead className="bg-white/[0.03] text-xs text-muted">
             <tr>
               <th scope="col" className="px-4 py-3 font-medium">Name</th>
               <th scope="col" className="px-4 py-3 font-medium">State</th>
@@ -33,7 +33,7 @@ export default async function ClientPortalPage() {
               <th scope="col" className="px-4 py-3 font-medium">IPv4</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-edge">
+          <tbody className="divide-y divide-white/[0.06]">
             {servers.map((server) => {
               const resources = server.resources as { vcpu?: number; memoryMb?: number; diskMb?: number };
               return (

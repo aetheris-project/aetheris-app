@@ -30,8 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Prisma client
-        run: npx prisma generate
+      - name: Generate Prisma clients (postgres + sqlite)
+        run: |
+          npx prisma generate
+          DATABASE_URL="file:./aetheris.db" npx prisma generate --schema prisma/sqlite/schema.prisma
 
       - name: Typecheck
         run: npm run typecheck

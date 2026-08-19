@@ -37,8 +37,11 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Generate the Prisma client and compile the Next.js production bundle
-# (npm run build already runs `prisma generate` first).
+# Set a build-time DATABASE_URL so both `prisma generate` steps inside
+# `npm run build` (prebuild) can resolve env("DATABASE_URL"). The sqlite
+# client is generated there too because src/lib/db.ts imports it statically
+# and `next build` resolves it.
+ENV DATABASE_URL=postgresql://aetheris:aetheris@localhost:5432/aetheris
 RUN npm run build
 
 # ---------------------------------------------------------------------------

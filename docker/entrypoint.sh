@@ -11,8 +11,18 @@ set -eu
 
 mode="${1:-web}"
 
-echo "[aetheris] applying database migrations (mode=${mode})"
-npx prisma migrate deploy
+db_mode="${AETHERIS_DB_MODE:-postgres}"
+case "${DATABASE_URL:-}" in
+  file:*) db_mode=sqlite ;;
+esac
+
+if [ "$db_mode" = "sqlite" ]; then
+  echo "[aetheris] applying sqlite migrations (mode=${mode})"
+  npx prisma migrate deploy --schema prisma/sqlite/schema.prisma
+else
+  echo "[aetheris] applying database migrations (mode=${mode})"
+  npx prisma migrate deploy
+fi
 
 case "${mode}" in
   web)

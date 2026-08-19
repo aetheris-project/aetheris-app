@@ -1,0 +1,88 @@
+# Aetheris control plane - SQLite development stack.
+#
+# Same services as docker-compose.yml but without the PostgreSQL container:
+# the Prisma app and the Python backend both persist to local .db files
+# (SQLite), recommended for test and development phases. Data survives
+# restarts through the sqlite-data volume.
+#
+# Usage:
+#   docker compose -f docker-compose.sqlite.yml up -d --build
+#
+# The web UI is served on http://localhost:3000 and the Python backend on
+# http://localhost:8000 (health check: http://localhost:8000/health).
+
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    ports:
+      - "6379:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: web
+    environment:
+      NODE_ENV: production
+      AETHERIS_DB_MODE: sqlite
+      AETHERIS_APP_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+      DATABASE_URL: file:/data/aetheris.db
+      REDIS_URL: redis://redis:6379
+      NEXTAUTH_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - sqlite-data:/data
+    ports:
+      - "3000:3000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: worker
+    environment:
+      NODE_ENV: production
+      AETHERIS_DB_MODE: sqlite
+      AETHERIS_APP_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+      DATABASE_URL: file:/data/aetheris.db
+      REDIS_URL: redis://redis:6379
+      NEXTAUTH_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - sqlite-data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      AETHERIS_BACKEND_DB: /data/aetheris-backend.db
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    volumes:
+      - sqlite-data:/data
+    ports:
+      - "8000:8000"
+
+volumes:
+  redis-data:
+  sqlite-data:

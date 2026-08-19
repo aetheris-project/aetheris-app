@@ -12,5 +12,8 @@ next-env.d.ts
 npm-debug.log*
 coverage
 
+# Generated Prisma client for the SQLite variant
+prisma/generated
+
 .vercel
 .env*

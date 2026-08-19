@@ -155,6 +155,9 @@ aetheris-app/
 ├── backend/                  # Python REST API (FastAPI + SQLite)
 ├── prisma/
 │   ├── schema.prisma         # PostgreSQL data model
+│   ├── sqlite/
+│   │   ├── schema.prisma     # SQLite variant (Json -> String fields)
+│   │   └── migrations/       # SQLite migration history
 │   └── seed.ts               # Initial plans and demo data
 ├── src/
 │   ├── lib/
@@ -167,7 +170,8 @@ aetheris-app/
 │   │   │   │   └── index.ts          # Zod-validated factory/registry
 │   │   │   └── payments/     # Stripe, PayPal, Mollie gateways
 │   │   ├── config/env.ts     # Zod-validated environment
-│   │   ├── db.ts             # Prisma singleton
+│   │   ├── db.ts             # Prisma singleton (Postgres or SQLite)
+│   │   ├── db-codec.ts       # JSON codec middleware for the SQLite client
 │   │   ├── redis.ts          # ioredis singleton
 │   │   └── queue.ts          # BullMQ queues and workers
 │   └── workers/              # Billing, provisioning, telemetry processors
@@ -217,6 +221,21 @@ docker compose up -d --build
 - Web UI: http://localhost:3000
 - Python backend: http://localhost:8000 (health: http://localhost:8000/health)
 - PostgreSQL: localhost:5432, Redis: localhost:6379
+
+#### Choose your database engine
+
+By default the stack runs with PostgreSQL. For local testing and quick
+evaluations you can run the entire platform against a **local SQLite `.db`
+file** (no database container at all):
+
+```bash
+docker compose -f docker-compose.sqlite.yml up -d --build
+```
+
+SQLite mode is selected automatically when `AETHERIS_DB_MODE=sqlite` or when
+`DATABASE_URL` starts with `file:`. The app ships a dedicated Prisma schema
+(`prisma/sqlite/schema.prisma`) and a JSON codec that maps the JSON columns to
+TEXT, so the same data model runs on both engines without code changes.
 
 Configuration is read from a local `.env` file (docker compose loads it
 automatically) or from the defaults in `docker-compose.yml`. Before going to
@@ -278,7 +297,8 @@ missing required value aborts startup with the exact field name.
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `DATABASE_URL` | yes | - | PostgreSQL connection string |
+| `DATABASE_URL` | yes | - | PostgreSQL connection string, or `file:./aetheris.db` for SQLite mode |
+| `AETHERIS_DB_MODE` | no | `postgres` | Database engine: `postgres` or `sqlite` (local `.db` file) |
 | `REDIS_URL` | yes | `redis://127.0.0.1:6379` | Redis connection string |
 | `AETHERIS_APP_URL` | yes | - | Public base URL of the control plane |
 | `AETHERIS_SECRET` | yes | - | Platform signing secret (>= 32 chars) |

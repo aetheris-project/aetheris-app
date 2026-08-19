@@ -1,0 +1,105 @@
+# Aetheris control plane - full Docker stack.
+#
+# Usage (works identically on Linux, macOS and Windows / Docker Desktop):
+#   docker compose up -d --build
+#
+# The web UI is served on http://localhost:3000 and the Python backend on
+# http://localhost:8000 (health check: http://localhost:8000/health).
+#
+# Configuration comes from a local .env file (docker compose reads it
+# automatically) or from the defaults below. Copy .env.example to .env and
+# set a strong AETHERIS_SECRET before going to production.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aetheris}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aetheris}
+      POSTGRES_DB: ${POSTGRES_DB:-aetheris}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aetheris} -d ${POSTGRES_DB:-aetheris}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    ports:
+      - "6379:6379"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: web
+    environment:
+      NODE_ENV: production
+      AETHERIS_APP_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aetheris}:${POSTGRES_PASSWORD:-aetheris}@db:5432/${POSTGRES_DB:-aetheris}
+      REDIS_URL: redis://redis:6379
+      NEXTAUTH_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: worker
+    environment:
+      NODE_ENV: production
+      AETHERIS_APP_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-aetheris}:${POSTGRES_PASSWORD:-aetheris}@db:5432/${POSTGRES_DB:-aetheris}
+      REDIS_URL: redis://redis:6379
+      NEXTAUTH_URL: ${AETHERIS_APP_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # The Python backend is SQLite-backed by default; AETHERIS_BACKEND_DB
+      # points it at a volume so data survives container restarts.
+      AETHERIS_BACKEND_DB: /data/aetheris.db
+      AETHERIS_SECRET: ${AETHERIS_SECRET:-change-me-please-this-is-a-32-char-minimum}
+    volumes:
+      - backend-data:/data
+    ports:
+      - "8000:8000"
+
+volumes:
+  db-data:
+  redis-data:
+  backend-data:

@@ -204,6 +204,54 @@ Background workers run separately:
 npm run worker
 ```
 
+## Docker (all operating systems)
+
+The full stack ships as Docker images and runs identically on Linux, macOS
+and Windows (Docker Desktop with the WSL2 backend). It brings up PostgreSQL,
+Redis, the Next.js web server, the BullMQ worker and the Python backend:
+
+```bash
+docker compose up -d --build
+```
+
+- Web UI: http://localhost:3000
+- Python backend: http://localhost:8000 (health: http://localhost:8000/health)
+- PostgreSQL: localhost:5432, Redis: localhost:6379
+
+Configuration is read from a local `.env` file (docker compose loads it
+automatically) or from the defaults in `docker-compose.yml`. Before going to
+production, set a strong `AETHERIS_SECRET` (>= 32 characters):
+
+```bash
+cp .env.example .env
+# edit .env, then
+AETHERIS_SECRET=$(openssl rand -hex 32)
+docker compose up -d --build
+```
+
+The container entrypoint (`docker/entrypoint.sh`) applies pending Prisma
+migrations on every boot, so a fresh database is ready on the first run. The
+web and worker services share one image; `command: web` / `command: worker`
+selects the entrypoint. Useful commands:
+
+```bash
+docker compose logs -f web       # follow the web server logs
+ docker compose ps                # inspect healthchecks
+ docker compose down              # stop the stack (volumes kept)
+ docker compose down -v           # stop and wipe data volumes
+```
+
+Build the images individually:
+
+```bash
+docker build -t aetheris-app .
+docker build -t aetheris-backend ./backend
+```
+
+> Windows note: install Docker Desktop (WSL2 backend) and run the commands
+> above from PowerShell or Git Bash. No native build tooling is required -
+> the images build the Node and Python runtimes for you.
+
 ## Production installation
 
 The non-interactive installer performs system checks, database migrations,

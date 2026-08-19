@@ -7,7 +7,17 @@ export const metadata: Metadata = {
     default: "Aetheris - Control Plane",
     template: "%s | Aetheris"
   },
-  description: "Enterprise billing and virtualization management control plane."
+  description: "Enterprise billing and virtualization management control plane.",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+    other: {
+      rel: "icon",
+      type: "image/svg+xml",
+      url: "/icon.svg"
+    }
+  }
 };
 
 export const viewport: Viewport = {

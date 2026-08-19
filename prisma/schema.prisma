@@ -1,0 +1,282 @@
+// Aetheris core data model.
+// PostgreSQL via Prisma ORM. Run `npx prisma migrate dev` to apply.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identity and tenancy
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String? // null when authentication is delegated (Clerk, SSO)
+  authProvider String   @default("nextauth") // nextauth | clerk | saml
+  role         Role     @default(client)
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  organizationId String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([organizationId])
+}
+
+enum Role {
+  superadmin
+  admin
+  operator
+  client
+}
+
+model Organization {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  customDomain String?  @unique
+  status       OrgStatus @default(active)
+  users        User[]
+  whitelabel   WhitelabelConfig?
+  hypervisors  HypervisorCredential[]
+  nodes        Node[]
+  servers      Server[]
+  plans        Plan[]
+  invoices     Invoice[]
+  subscriptions Subscription[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum OrgStatus {
+  active
+  suspended
+  closed
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic whitelabeling (admin-configurable without rebuilds)
+// ---------------------------------------------------------------------------
+
+model WhitelabelConfig {
+  id              String   @id @default(cuid())
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId  String   @unique
+  brand           Json // { name, tagline, logoUrl, logoDarkUrl, domain }
+  theme           Json // { accent: emerald|indigo|amber, radius, fontFamily }
+  navigation      Json // [{ label, href, cta }]
+  emailTemplates  Json // keyed by event: invoice.created, server.suspended, ...
+  modules         Json // { billing, vncConsole, pterodactyl, proxmox, virtfusion, registrars }
+  updatedAt       DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Hypervisor orchestration
+// ---------------------------------------------------------------------------
+
+model HypervisorCredential {
+  id             String        @id @default(cuid())
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
+  kind           HypervisorKind // pterodactyl | proxmox | virtfusion
+  name           String
+  // Encrypted at rest (AES-256-GCM) before persistence; never logged.
+  configEncrypted String
+  enabled        Boolean       @default(true)
+  nodes          Node[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([organizationId, name])
+  @@index([kind])
+}
+
+enum HypervisorKind {
+  pterodactyl
+  proxmox
+  virtfusion
+}
+
+model Node {
+  id                String   @id @default(cuid())
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId    String
+  hypervisor        HypervisorCredential @relation(fields: [hypervisorId], references: [id])
+  hypervisorId      String
+  externalId        String // upstream node identifier on the hypervisor
+  name              String
+  location          String
+  status            NodeStatus @default(online)
+  capacity          Json // { cores, memoryMb, diskMb }
+  servers           Server[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([hypervisorId, externalId])
+  @@index([organizationId])
+}
+
+enum NodeStatus {
+  online
+  draining
+  offline
+}
+
+model Server {
+  id                String        @id @default(cuid())
+  organization      Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId    String
+  node              Node          @relation(fields: [nodeId], references: [id])
+  nodeId            String
+  externalId        String // upstream server identifier
+  clientUserId      String
+  name              String
+  state             ServerState  @default(installing)
+  resources         Json // { vcpu, memoryMb, diskMb, swapMb, io, cpuLimitPct }
+  environment       Json // egg/template variables
+  ipv4              String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  @@unique([nodeId, externalId])
+  @@index([organizationId, state])
+}
+
+enum ServerState {
+  pending
+  installing
+  running
+  suspended
+  terminated
+  error
+}
+
+// ---------------------------------------------------------------------------
+// Billing
+// ---------------------------------------------------------------------------
+
+model Plan {
+  id               String   @id @default(cuid())
+  organization     Organization? @relation(fields: [organizationId], references: [id])
+  organizationId   String?
+  name             String
+  monthlyPriceCents Int
+  setupFeeCents    Int      @default(0)
+  currency         String   @default("USD")
+  limits           Json // resource limits granted to subscribers
+  active           Boolean  @default(true)
+  subscriptions    Subscription[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Subscription {
+  id               String   @id @default(cuid())
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId   String
+  plan             Plan     @relation(fields: [planId], references: [id])
+  planId           String
+  status           SubscriptionStatus @default(active)
+  periodStart      DateTime
+  periodEnd        DateTime
+  provider         String? // stripe | paypal | mollie
+  providerSubId    String?
+  invoices         Invoice[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([organizationId, status])
+}
+
+enum SubscriptionStatus {
+  active
+  past_due
+  canceled
+  paused
+}
+
+model Invoice {
+  id               String      @id @default(cuid())
+  organization     Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId   String
+  subscription     Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId   String?
+  number           String      @unique
+  status           InvoiceStatus @default(pending)
+  totalCents       Int
+  currency         String      @default("USD")
+  dueDate          DateTime
+  lines            InvoiceLine[]
+  payments         Payment[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([organizationId, status])
+}
+
+enum InvoiceStatus {
+  draft
+  pending
+  paid
+  overdue
+  failed
+  void
+}
+
+model InvoiceLine {
+  id        String  @id @default(cuid())
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  invoiceId String
+  description String
+  quantity  Int     @default(1)
+  unitCents Int
+  totalCents Int
+  metadata  Json?
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id])
+  invoiceId       String
+  provider        String // stripe | paypal | mollie
+  providerPaymentId String?
+  status          PaymentStatus @default(pending)
+  amountCents     Int
+  currency        String   @default("USD")
+  method          Json? // { brand, last4, expiry }
+  failureReason   String?
+  createdAt       DateTime @default(now())
+
+  @@index([invoiceId, status])
+}
+
+enum PaymentStatus {
+  pending
+  succeeded
+  failed
+  refunded
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String?
+  actorId        String?
+  action         String // server.provisioned, invoice.paid, node.drained, ...
+  entityType     String?
+  entityId       String?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([actorId])
+}

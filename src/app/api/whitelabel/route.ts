@@ -64,7 +64,7 @@ const DEFAULT_CONFIG: WhitelabelPayload = {
   theme: { accent: "emerald", radius: 10, fontFamily: "" },
   navigation: [
     { label: "Product", href: "#product", cta: false },
-    { label: "Demo", href: "#demo", cta: false },
+    { label: "Live Demo", href: "/demo", cta: false },
     { label: "Documentation", href: "https://docs.aetheris.enterprise", cta: false },
     { label: "Open Console", href: "https://app.aetheris.enterprise", cta: true }
   ],

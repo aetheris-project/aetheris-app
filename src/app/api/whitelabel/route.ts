@@ -121,11 +121,10 @@ export async function GET(request: Request) {
   }
 
   // 3. Populate cache (best effort; a cache failure must not break the request)
-  try {
-    await redis.set(cacheKey, JSON.stringify(config), "EX", CACHE_TTL_SECONDS);
-  } catch (cause) {
-    console.error("[aetheris] whitelabel cache write failed", cause);
-  }
+  await withCacheTimeout(
+    redis.set(cacheKey, JSON.stringify(config), "EX", CACHE_TTL_SECONDS),
+    CACHE_READ_TIMEOUT_MS
+  );
 
   return NextResponse.json(config, {
     headers: { "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}` }

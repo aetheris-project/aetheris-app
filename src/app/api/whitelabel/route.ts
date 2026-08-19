@@ -61,8 +61,13 @@ export async function GET(request: Request) {
   const orgSlug = searchParams.get("organization") ?? "default";
   const cacheKey = `${CACHE_PREFIX}${orgSlug}`;
 
-  // 1. Redis cache
-  const cached = await redis.get(cacheKey);
+  // 1. Redis cache (best effort: an unreachable cache must not break branding)
+  let cached: string | null = null;
+  try {
+    cached = await redis.get(cacheKey);
+  } catch (cause) {
+    console.error("[aetheris] whitelabel cache read failed", cause);
+  }
   if (cached) {
     return NextResponse.json(JSON.parse(cached) as unknown, {
       headers: { "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}` }

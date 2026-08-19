@@ -17,6 +17,28 @@ import { redis } from "@/lib/redis";
 
 const CACHE_TTL_SECONDS = 300;
 const CACHE_PREFIX = "aetheris:whitelabel:";
+const CACHE_READ_TIMEOUT_MS = 1500;
+
+/**
+ * Bound a cache read. The shared Redis connection uses BullMQ settings
+ * (maxRetriesPerRequest: null), so a bare command never rejects when the
+ * server is unreachable. A cache miss is always an acceptable outcome.
+ */
+function withCacheTimeout(promise: Promise<string | null>, ms: number): Promise<string | null> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(null);
+      }
+    );
+  });
+}
 
 interface WhitelabelPayload {
   brand: {
@@ -62,12 +84,7 @@ export async function GET(request: Request) {
   const cacheKey = `${CACHE_PREFIX}${orgSlug}`;
 
   // 1. Redis cache (best effort: an unreachable cache must not break branding)
-  let cached: string | null = null;
-  try {
-    cached = await redis.get(cacheKey);
-  } catch (cause) {
-    console.error("[aetheris] whitelabel cache read failed", cause);
-  }
+  const cached = await withCacheTimeout(redis.get(cacheKey), CACHE_READ_TIMEOUT_MS);
   if (cached) {
     return NextResponse.json(JSON.parse(cached) as unknown, {
       headers: { "Cache-Control": `public, s-maxage=${CACHE_TTL_SECONDS}` }

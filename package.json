@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Aetheris core billing system, admin control plane, hypervisor drivers and client portal.",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",

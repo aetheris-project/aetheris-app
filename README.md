@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.svg" alt="Aetheris" width="80">
+  <img src="assets/icon.svg" alt="Aetheris" width="88">
 </p>
 
 <h1 align="center">Aetheris App</h1>
@@ -9,9 +9,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/Next.js-14-black?logo=next.js" alt="Next.js">
   <img src="https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma" alt="Prisma">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis" alt="Redis">
+  <img src="https://img.shields.io/badge/BullMQ-5-CA4221?logo=redis" alt="BullMQ">
 </p>
 
 ---
@@ -120,6 +123,25 @@ flowchart TD
   Paid --> Receipt[Email template: invoice.paid]
 ```
 
+## Features
+
+- Unified billing engine: invoices, subscriptions, proration, dunning and tax,
+  wired to Stripe, PayPal and Mollie.
+- Universal hypervisor driver contract with native Pterodactyl (Application and
+  Client API), Proxmox VE API v2, VirtFusion REST, cPanel/WHM and DirectAdmin.
+- Client portal with server lifecycle, VNC console (WebSocket token issuance),
+  backups and payment methods.
+- Admin control plane: node management, allocation pools, nest/egg targeting,
+  backup policies, per-client resource limits.
+- Dynamic whitelabeling: brand, theme variables, navigation, email templates,
+  custom domain routing and integration toggles stored in PostgreSQL and cached
+  in Redis; no rebuild required.
+- Background orchestration with BullMQ: provisioning, billing runs, telemetry
+  collection and email delivery.
+- SSR-first rendering, dynamic sitemap/robots, OpenGraph generation and JSON-LD
+  structured data.
+- Strict-mode TypeScript, zod-validated configuration, zero layout shifts.
+
 ## Repository layout
 
 ```text
@@ -130,6 +152,7 @@ aetheris-app/
 │   └── api/                  # Route handlers (whitelabel, webhooks, drivers)
 ├── bin/
 │   └── install.sh            # Non-interactive production installer
+├── backend/                  # Python REST API (FastAPI + SQLite)
 ├── prisma/
 │   ├── schema.prisma         # PostgreSQL data model
 │   └── seed.ts               # Initial plans and demo data
@@ -153,25 +176,6 @@ aetheris-app/
 ├── .env.example
 └── README.md
 ```
-
-## Features
-
-- Unified billing engine: invoices, subscriptions, proration, dunning and tax,
-  wired to Stripe, PayPal and Mollie.
-- Universal hypervisor driver contract with native Pterodactyl (Application and
-  Client API), Proxmox VE API v2, VirtFusion REST, cPanel/WHM and DirectAdmin.
-- Client portal with server lifecycle, VNC console (WebSocket token issuance),
-  backups and payment methods.
-- Admin control plane: node management, allocation pools, nest/egg targeting,
-  backup policies, per-client resource limits.
-- Dynamic whitelabeling: brand, theme variables, navigation, email templates,
-  custom domain routing and integration toggles stored in PostgreSQL and cached
-  in Redis; no rebuild required.
-- Background orchestration with BullMQ: provisioning, billing runs, telemetry
-  collection and email delivery.
-- SSR-first rendering, dynamic sitemap/robots, OpenGraph generation and JSON-LD
-  structured data.
-- Strict-mode TypeScript, zod-validated configuration, zero layout shifts.
 
 ## Prerequisites
 
@@ -217,7 +221,7 @@ bash bin/install.sh --yes --systemd --nginx
 ```
 
 Full guidance, including the manual Nginx and Certbot walkthrough, lives in the
-[aetheris-docs installation guide](../aetheris-docs/wiki/installation.md).
+[aetheris-docs installation guide](https://github.com/aetheris-project/aetheris-docs/blob/main/pages/wiki/installation.md).
 
 ## Environment variables
 
@@ -284,6 +288,15 @@ exponential backoff and retry policies defined in `src/lib/queue.ts`:
 - Security headers (CSP, HSTS, frame and referrer policies) are applied at the
   edge in `vercel.json`.
 - Password hashes use scrypt with per-user salt and constant-time comparison.
+
+## Related repositories
+
+- [aetheris-website](https://github.com/aetheris-project/aetheris-website) -
+  marketing site and interactive product demo
+- [aetheris-docs](https://github.com/aetheris-project/aetheris-docs) - wiki,
+  installation guides and API specifications
+- [aetheris-installer](https://github.com/aetheris-project/aetheris-installer) -
+  automated cross-platform installer
 
 ## License
 

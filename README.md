@@ -1,4 +1,20 @@
-# Aetheris App
+<p align="center">
+  <img src="../assets/icon.svg" alt="Aetheris" width="80">
+</p>
+
+<h1 align="center">Aetheris App</h1>
+
+<p align="center">
+  <strong>Enterprise billing and virtualization management control plane</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5.5-blue?logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Next.js-14-black?logo=next.js" alt="Next.js">
+  <img src="https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma" alt="Prisma">
+</p>
+
+---
 
 Enterprise billing and virtualization management control plane. Aetheris converges
 WHMCS, FOSSBilling, Pterodactyl Panel, Proxmox VE and VirtFusion into a single

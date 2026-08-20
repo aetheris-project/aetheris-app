@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CalendarClock, Clock, Plus, Trash2 } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { demoCronJobs } from "@/lib/demo-data";
 import { createCronJob, deleteCronJob, toggleCronJob } from "@/app/(admin)/admin/actions";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +38,12 @@ function humanSchedule(schedule: string): string {
 }
 
 export default async function AdminCronPage() {
-  const jobs = await prisma.cronJob.findMany({ orderBy: { createdAt: "asc" } });
+  let jobs;
+  try {
+    jobs = await prisma.cronJob.findMany({ orderBy: { createdAt: "asc" } });
+  } catch {
+    jobs = demoCronJobs;
+  }
 
   return (
     <div>

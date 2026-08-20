@@ -8,6 +8,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { demoStatusCounts } from "@/lib/demo-data";
 import { packageVersion } from "@/lib/config/version";
 
 export const dynamic = "force-dynamic";
@@ -48,12 +49,22 @@ async function fetchLatestRelease(): Promise<GithubRelease | null> {
 }
 
 export default async function AdminStatusPage() {
-  const [serverCount, nodeCount, invoiceCount, latest] = await Promise.all([
-    prisma.server.count(),
-    prisma.node.count(),
-    prisma.invoice.count(),
-    fetchLatestRelease()
-  ]);
+  let serverCount = demoStatusCounts.servers;
+  let nodeCount = demoStatusCounts.nodes;
+  let invoiceCount = demoStatusCounts.invoices;
+  try {
+    const [servers, nodes, invoices] = await Promise.all([
+      prisma.server.count(),
+      prisma.node.count(),
+      prisma.invoice.count()
+    ]);
+    serverCount = servers;
+    nodeCount = nodes;
+    invoiceCount = invoices;
+  } catch {
+    // demo fallback already set
+  }
+  const latest = await fetchLatestRelease();
 
   const current = packageVersion;
   const updateAvailable = latest !== null && compareVersions(current, latest.tag_name) < 0;

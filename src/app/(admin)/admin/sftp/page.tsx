@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FolderLock, KeyRound, Plus, Trash2, UserRound } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { demoClientServers, demoSftpUsers } from "@/lib/demo-data";
 import { createSftpUser, deleteSftpUser, toggleSftpUser } from "@/app/(admin)/admin/actions";
 
 export const dynamic = "force-dynamic";
@@ -10,17 +11,30 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminSftpPage() {
-  const [users, servers] = await Promise.all([
-    prisma.sftpUser.findMany({
-      include: { server: { select: { id: true, name: true, ipv4: true } } },
-      orderBy: { createdAt: "asc" }
-    }),
-    prisma.server.findMany({
-      where: { state: { not: "terminated" } },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true, ipv4: true }
-    })
-  ]);
+  let users;
+  let servers;
+  try {
+    const [fetchedUsers, fetchedServers] = await Promise.all([
+      prisma.sftpUser.findMany({
+        include: { server: { select: { id: true, name: true, ipv4: true } } },
+        orderBy: { createdAt: "asc" }
+      }),
+      prisma.server.findMany({
+        where: { state: { not: "terminated" } },
+        orderBy: { name: "asc" },
+        select: { id: true, name: true, ipv4: true }
+      })
+    ]);
+    users = fetchedUsers;
+    servers = fetchedServers;
+  } catch {
+    users = demoSftpUsers;
+    servers = demoClientServers.map((server) => ({
+      id: server.id,
+      name: server.name,
+      ipv4: server.ipv4
+    }));
+  }
 
   return (
     <div>

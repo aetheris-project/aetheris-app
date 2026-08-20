@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { demoStats } from "@/lib/demo-data";
 import {
   Activity,
   ArrowUpRight,
@@ -12,21 +13,32 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
-  const [runningServers, nodes, outstandingAgg, recentServers] = await Promise.all([
-    prisma.server.count({ where: { state: "running" } }),
-    prisma.node.count(),
-    prisma.invoice.aggregate({
-      _sum: { totalCents: true },
-      where: { status: { in: ["pending", "overdue"] } }
-    }),
-    prisma.server.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: { id: true, name: true, state: true, createdAt: true }
-    })
-  ]);
-
-  const outstanding = (outstandingAgg._sum.totalCents ?? 0) / 100;
+  // Fall back to the static demo dataset when the database is unreachable.
+  let runningServers = demoStats.runningServers;
+  let nodes = demoStats.nodes;
+  let outstanding = demoStats.outstanding;
+  let recentServers = demoStats.recentServers;
+  try {
+    const [counted, nodeCount, outstandingAgg, recent] = await Promise.all([
+      prisma.server.count({ where: { state: "running" } }),
+      prisma.node.count(),
+      prisma.invoice.aggregate({
+        _sum: { totalCents: true },
+        where: { status: { in: ["pending", "overdue"] } }
+      }),
+      prisma.server.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, name: true, state: true, createdAt: true }
+      })
+    ]);
+    runningServers = counted;
+    nodes = nodeCount;
+    outstanding = (outstandingAgg._sum.totalCents ?? 0) / 100;
+    recentServers = recent;
+  } catch {
+    // demo fallback already set
+  }
 
   const stats = [
     {

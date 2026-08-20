@@ -1,14 +1,22 @@
 import { prisma } from "@/lib/db";
+import { demoClientServers } from "@/lib/demo-data";
 import { Cpu, HardDrive, MemoryStick, Server, TerminalSquare } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientPortalPage() {
-  const servers = await prisma.server.findMany({
-    where: { state: { not: "terminated" } },
-    orderBy: { createdAt: "desc" },
-    take: 20
-  });
+  // The Vercel demo deployment has no reachable database: fall back to the
+  // static demo dataset so the portal always renders.
+  let servers;
+  try {
+    servers = await prisma.server.findMany({
+      where: { state: { not: "terminated" } },
+      orderBy: { createdAt: "desc" },
+      take: 20
+    });
+  } catch {
+    servers = demoClientServers;
+  }
 
   const running = servers.filter((server) => server.state === "running").length;
 

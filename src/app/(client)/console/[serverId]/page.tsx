@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { demoClientServers } from "@/lib/demo-data";
 import { ConsoleClient } from "./console-client";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +13,15 @@ export async function generateMetadata({
 }: {
   params: { serverId: string };
 }): Promise<Metadata> {
-  const server = await prisma.server.findUnique({ where: { id: params.serverId } });
-  if (!server) return { title: "Console" };
-  return { title: `${server.name} - Console` };
+  const demo = demoClientServers.find((candidate) => candidate.id === params.serverId);
+  if (demo) return { title: `${demo.name} - Console` };
+  try {
+    const server = await prisma.server.findUnique({ where: { id: params.serverId } });
+    if (!server) return { title: "Console" };
+    return { title: `${server.name} - Console` };
+  } catch {
+    return { title: "Console" };
+  }
 }
 
 export default async function ConsolePage({
@@ -22,11 +29,27 @@ export default async function ConsolePage({
 }: {
   params: { serverId: string };
 }) {
-  const server = await prisma.server.findUnique({
-    where: { id: params.serverId },
-    include: { node: { select: { name: true, location: true } } }
-  });
-  if (!server) notFound();
+  let server;
+  try {
+    server = await prisma.server.findUnique({
+      where: { id: params.serverId },
+      include: { node: { select: { name: true, location: true } } }
+    });
+  } catch {
+    server = null;
+  }
+  if (!server) {
+    const demo = demoClientServers.find((candidate) => candidate.id === params.serverId);
+    if (!demo) notFound();
+    server = {
+      id: demo.id,
+      name: demo.name,
+      state: demo.state,
+      ipv4: demo.ipv4,
+      resources: demo.resources,
+      node: { name: "fra-01", location: "EU West - Frankfurt" }
+    };
+  }
 
   const resources = server.resources as { vcpu?: number; memoryMb?: number; diskMb?: number };
 

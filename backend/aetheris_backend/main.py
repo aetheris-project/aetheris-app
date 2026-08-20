@@ -20,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import init_db
-from .routers import auth, billing, nodes, servers, theme
+from .routers import auth, billing, nodes, servers, system, theme
 from .seed import seed
 
 
@@ -50,6 +50,7 @@ def create_app() -> FastAPI:
     app.include_router(servers.router)
     app.include_router(billing.router)
     app.include_router(theme.router)
+    app.include_router(system.router)
 
     @app.get("/health", tags=["system"])
     def health() -> dict:

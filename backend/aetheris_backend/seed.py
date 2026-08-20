@@ -40,6 +40,16 @@ INVOICES = [
     ("INV-10425", "Umbrella Corp", "Dedicated - 8x Cache-Redis", 124900, "2026-07-28", "paid"),
 ]
 
+CRON_JOBS = [
+    ("Nightly backups", "Snapshot every server and prune old backups", "0 3 * * *", "backup", 1),
+    ("Invoice dunning", "Send payment reminders for pending and overdue invoices", "0 9 * * *", "invoice.dunning", 1),
+    ("Snapshot prune", "Remove backups past retention", "30 4 * * *", "snapshot.prune", 1),
+    ("Pterodactyl sync", "Reconcile server state with the Pterodactyl panel", "*/15 * * * *", "sync.pterodactyl", 1),
+    ("Proxmox sync", "Reconcile nodes and VMs with Proxmox VE", "*/10 * * * *", "sync.proxmox", 1),
+    ("VirtFusion sync", "Reconcile nodes with VirtFusion", "*/10 * * * *", "sync.virtfusion", 1),
+    ("Daily report", "Compile and deliver the daily operations report", "0 7 * * *", "report.daily", 0),
+]
+
 
 def seed(db_path: str | None = None) -> None:
     """Insert the demo dataset. Missing tables are created first."""
@@ -83,6 +93,11 @@ def seed(db_path: str | None = None) -> None:
         conn.execute(
             "INSERT OR IGNORE INTO settings (key, value) VALUES ('theme', '{\"accent\":\"emerald\",\"radius\":10,\"font_family\":\"\"}')"
         )
+        for job in CRON_JOBS:
+            conn.execute(
+                "INSERT OR IGNORE INTO cron_jobs (name, description, schedule, task, enabled) VALUES (?, ?, ?, ?, ?)",
+                job,
+            )
         conn.commit()
     finally:
         conn.close()

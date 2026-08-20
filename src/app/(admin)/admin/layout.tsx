@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
+  Activity,
+  CalendarClock,
   CreditCard,
+  FolderLock,
   LayoutDashboard,
   Monitor,
   Palette,
@@ -11,9 +14,12 @@ import {
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/status", label: "Status", icon: Activity },
   { href: "/admin/nodes", label: "Nodes", icon: Server },
   { href: "/admin/servers", label: "Servers", icon: Monitor },
   { href: "/admin/billing", label: "Billing", icon: CreditCard },
+  { href: "/admin/cron", label: "Scheduled tasks", icon: CalendarClock },
+  { href: "/admin/sftp", label: "SFTP users", icon: FolderLock },
   { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette },
   { href: "/admin/settings", label: "Settings", icon: Settings }
 ];

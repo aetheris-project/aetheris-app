@@ -123,6 +123,7 @@ model Server {
   ipv4              String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+  sftpUsers         SftpUser[]
 
   @@unique([nodeId, externalId])
   @@index([organizationId, state])
@@ -231,4 +232,41 @@ model AuditLog {
 
   @@index([organizationId, createdAt])
   @@index([actorId])
+}
+
+// ---------------------------------------------------------------------------
+// Operations: scheduled jobs and SFTP users
+// ---------------------------------------------------------------------------
+
+model CronJob {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  // cron(5) expression, e.g. "0 3 * * *"
+  schedule    String
+  // task key: backup, invoice.dunning, snapshot.prune, sync.pterodactyl, sync.proxmox
+  task        String
+  enabled     Boolean  @default(true)
+  lastRunAt   DateTime?
+  nextRunAt   DateTime?
+  lastStatus  String? // success | failed | running
+  lastError   String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SftpUser {
+  id          String   @id @default(cuid())
+  server      Server   @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  serverId    String
+  username    String
+  // path jail relative to the server root, e.g. /home/container
+  homePath    String   @default("/home/container")
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([serverId, username])
+  @@index([serverId])
 }

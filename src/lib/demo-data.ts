@@ -21,28 +21,28 @@ export const demoStats = {
 
 export const demoClientServers = [
   {
-    id: "demo-srv-1",
+    id: "srv-8f2a",
     name: "Production-01",
     state: "running",
     ipv4: "10.40.0.11",
     resources: { vcpu: 2, memoryMb: 4096, diskMb: 40960 }
   },
   {
-    id: "demo-srv-2",
+    id: "srv-19c3",
     name: "Web-02",
     state: "running",
     ipv4: "10.40.0.12",
     resources: { vcpu: 1, memoryMb: 2048, diskMb: 20480 }
   },
   {
-    id: "demo-srv-3",
+    id: "srv-44b1",
     name: "Staging-API",
     state: "stopped",
     ipv4: "10.40.0.13",
     resources: { vcpu: 2, memoryMb: 4096, diskMb: 40960 }
   },
   {
-    id: "demo-srv-4",
+    id: "srv-a7d0",
     name: "Cache-Redis",
     state: "running",
     ipv4: "10.40.0.14",
@@ -115,8 +115,8 @@ export const demoSftpUsers = [
     enabled: true,
     createdAt: new Date("2026-08-05T10:00:00Z"),
     updatedAt: new Date("2026-08-05T10:00:00Z"),
-    serverId: "demo-srv-1",
-    server: { id: "demo-srv-1", name: "Production-01", ipv4: "10.40.0.11" }
+    serverId: "srv-8f2a",
+    server: { id: "srv-8f2a", name: "Production-01", ipv4: "10.40.0.11" }
   },
   {
     id: "demo-sftp-2",
@@ -125,8 +125,8 @@ export const demoSftpUsers = [
     enabled: true,
     createdAt: new Date("2026-08-09T14:20:00Z"),
     updatedAt: new Date("2026-08-09T14:20:00Z"),
-    serverId: "demo-srv-2",
-    server: { id: "demo-srv-2", name: "Web-02", ipv4: "10.40.0.12" }
+    serverId: "srv-19c3",
+    server: { id: "srv-19c3", name: "Web-02", ipv4: "10.40.0.12" }
   },
   {
     id: "demo-sftp-3",
@@ -135,7 +135,7 @@ export const demoSftpUsers = [
     enabled: false,
     createdAt: new Date("2026-08-02T08:00:00Z"),
     updatedAt: new Date("2026-08-02T08:00:00Z"),
-    serverId: "demo-srv-3",
-    server: { id: "demo-srv-3", name: "Staging-API", ipv4: "10.40.0.13" }
+    serverId: "srv-44b1",
+    server: { id: "srv-44b1", name: "Staging-API", ipv4: "10.40.0.13" }
   }
 ];

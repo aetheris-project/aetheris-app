@@ -260,6 +260,38 @@ docker compose logs -f web       # follow the web server logs
  docker compose down -v           # stop and wipe data volumes
 ```
 
+#### Manage the stack (start / stop / status / logs)
+
+A cross-platform manager is included so the same commands work from
+PowerShell, bash and the Aetheris Windows installer:
+
+```bash
+# Linux / macOS / Git Bash on Windows
+bash scripts/manage.sh status        # container states (colored per service)
+bash scripts/manage.sh start         # docker compose up -d
+bash scripts/manage.sh stop          # docker compose stop (volumes kept)
+bash scripts/manage.sh restart
+bash scripts/manage.sh logs -f       # live console, tail the whole stack
+bash scripts/manage.sh logs --tail 300
+bash scripts/manage.sh down          # stop and wipe data volumes
+```
+
+```powershell
+# PowerShell on Windows (Docker Desktop)
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 status
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 start
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 stop
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 logs -Follow
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 logs -Tail 300
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 down
+```
+
+Both scripts detect the installed engine from `.env` (`AETHERIS_DB_MODE`)
+and pick `docker-compose.sqlite.yml` automatically; pass `--sqlite` /
+`-Sqlite` to force it. The Windows installer exposes the same operations in
+its "Manage the stack" menu (status, start, stop) plus a live logs console
+streaming `docker compose logs -f`.
+
 Build the images individually:
 
 ```bash

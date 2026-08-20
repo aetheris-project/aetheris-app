@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 /**
- * Crawler rules for the control plane.
+ * Crawler rules for the control panel.
  *
  * The public client portal and login are indexable; the admin control
  * plane and internal API surfaces are excluded from search engines.

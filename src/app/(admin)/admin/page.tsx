@@ -73,7 +73,7 @@ export default async function AdminOverviewPage() {
   return (
     <div>
       <p className="aetheris-kicker">Admin</p>
-      <h1 className="mt-3 text-2xl font-bold tracking-tight">Control plane overview</h1>
+      <h1 className="mt-3 text-2xl font-bold tracking-tight">Control panel overview</h1>
       <p className="mt-2 text-sm text-muted">
         Aggregate state across hypervisors, billing and tenancy.
       </p>

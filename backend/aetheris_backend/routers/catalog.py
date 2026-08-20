@@ -2,7 +2,7 @@
 
 Read-only catalog of the games provisionable through the Aetheris Pterodactyl
 bridge. Each entry mirrors an egg in the `aetheris-game-eggs` repository and
-exposes resource presets with retail pricing so the control plane and the
+exposes resource presets with retail pricing so the control panel and the
 marketing site can render a coherent order flow.
 
 Pricing is stored in integer cents per month, VAT excluded.

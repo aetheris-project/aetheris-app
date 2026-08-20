@@ -1,6 +1,6 @@
 """Aetheris Python backend application.
 
-A self-contained REST API for the control plane demo: authentication,
+A self-contained REST API for the control panel demo: authentication,
 node management, server provisioning, billing and whitelabel themes on a
 zero-configuration SQLite database.
 
@@ -35,7 +35,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Aetheris Backend API",
         version="1.0.0",
-        description="REST API for the Aetheris billing and virtualization control plane.",
+        description="REST API for the Aetheris billing and virtualization control panel.",
         lifespan=lifespan,
     )
     app.add_middleware(

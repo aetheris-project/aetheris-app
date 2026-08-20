@@ -56,7 +56,7 @@ interface WhitelabelPayload {
 const DEFAULT_CONFIG: WhitelabelPayload = {
   brand: {
     name: "Aetheris",
-    tagline: "Billing and virtualization control plane for the enterprise",
+    tagline: "Billing and virtualization control panel for the enterprise",
     logoUrl: "/brand/aetheris-mark.svg",
     logoDarkUrl: "/brand/aetheris-mark.svg",
     domain: "aetheris.enterprise"

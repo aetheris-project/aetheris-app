@@ -5,7 +5,7 @@
 <h1 align="center">Aetheris App</h1>
 
 <p align="center">
-  <strong>Enterprise billing and virtualization management control plane</strong>
+  <strong>Enterprise billing and virtualization management control panel</strong>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 
 ---
 
-Enterprise billing and virtualization management control plane. Aetheris converges
+Enterprise billing and virtualization management control panel. Aetheris converges
 WHMCS, FOSSBilling, Pterodactyl Panel, Proxmox VE and VirtFusion into a single
 platform: one billing engine, one client portal, and one set of hypervisor
 drivers, with total admin control and dynamic whitelabeling.
@@ -46,7 +46,7 @@ flowchart LR
 
   subgraph Backend[Aetheris backend]
     Billing[Billing engine]
-    AdminPlane[Admin control plane]
+    AdminPlane[Admin control panel]
     Workers[BullMQ workers]
     Redis[(Redis)]
     Postgres[(PostgreSQL)]
@@ -131,7 +131,7 @@ flowchart TD
   Client API), Proxmox VE API v2, VirtFusion REST, cPanel/WHM and DirectAdmin.
 - Client portal with server lifecycle, VNC console (WebSocket token issuance),
   backups and payment methods.
-- Admin control plane: node management, allocation pools, nest/egg targeting,
+- Admin control panel: node management, allocation pools, nest/egg targeting,
   backup policies, per-client resource limits.
 - Dynamic whitelabeling: brand, theme variables, navigation, email templates,
   custom domain routing and integration toggles stored in PostgreSQL and cached
@@ -147,7 +147,7 @@ flowchart TD
 ```text
 aetheris-app/
 ├── app/
-│   ├── (admin)/              # Admin control plane routes
+│   ├── (admin)/              # Admin control panel routes
 │   ├── (client)/             # Client portal routes
 │   └── api/                  # Route handlers (whitelabel, webhooks, drivers)
 ├── bin/
@@ -300,7 +300,7 @@ missing required value aborts startup with the exact field name.
 | `DATABASE_URL` | yes | - | PostgreSQL connection string, or `file:./aetheris.db` for SQLite mode |
 | `AETHERIS_DB_MODE` | no | `postgres` | Database engine: `postgres` or `sqlite` (local `.db` file) |
 | `REDIS_URL` | yes | `redis://127.0.0.1:6379` | Redis connection string |
-| `AETHERIS_APP_URL` | yes | - | Public base URL of the control plane |
+| `AETHERIS_APP_URL` | yes | - | Public base URL of the control panel |
 | `AETHERIS_SECRET` | yes | - | Platform signing secret (>= 32 chars) |
 | `NEXTAUTH_URL` | no | - | NextAuth callback base URL |
 | `NEXTAUTH_SECRET` | no | - | NextAuth encryption secret |

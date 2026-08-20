@@ -2,7 +2,7 @@
   "name": "aetheris-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Aetheris core billing system, admin control plane, hypervisor drivers and client portal.",
+  "description": "Aetheris core billing system, admin control panel, hypervisor drivers and client portal.",
   "license": "AGPL-3.0",
   "scripts": {
     "dev": "next dev",

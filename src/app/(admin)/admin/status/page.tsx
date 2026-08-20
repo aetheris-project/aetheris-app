@@ -81,7 +81,7 @@ export default async function AdminStatusPage() {
       <p className="aetheris-kicker">Admin</p>
       <h1 className="mt-3 text-2xl font-bold tracking-tight">Platform status</h1>
       <p className="mt-2 text-sm text-muted">
-        Version, update availability and control plane health.
+        Version, update availability and control panel health.
       </p>
 
       {/* Update banner */}
@@ -203,7 +203,7 @@ export default async function AdminStatusPage() {
           </dl>
           <div className="mt-5 flex items-center gap-2 rounded-xl border border-edge bg-raised/40 p-3 text-xs text-muted">
             <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
-            Control plane healthy. All drivers idle; no draining required.
+            Control panel healthy. All drivers idle; no draining required.
           </div>
         </div>
       </div>

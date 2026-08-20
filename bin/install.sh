@@ -3,7 +3,7 @@
 # Aetheris - Non-interactive installer
 # =============================================================================
 #
-# Installs and configures the aetheris-app control plane on Ubuntu 22.04 LTS
+# Installs and configures the aetheris-app control panel on Ubuntu 22.04 LTS
 # or Debian 12. Runs from the repository root:
 #
 #   bash bin/install.sh --yes
@@ -334,7 +334,7 @@ if [[ "$INSTALL_SYSTEMD" == "true" ]]; then
   NODE_BIN="$(command -v node)"
   cat > /etc/systemd/system/aetheris-web.service <<UNIT
 [Unit]
-Description=Aetheris control plane (Next.js)
+Description=Aetheris control panel (Next.js)
 After=network.target postgresql.service redis-server.service
 Wants=network.target
 

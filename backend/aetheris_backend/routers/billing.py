@@ -1,6 +1,6 @@
 """Billing engine endpoints.
 
-A production-shaped billing core for the Aetheris control plane:
+A production-shaped billing core for the Aetheris control panel:
 
 - Invoices with multiple line items, per-line VAT and automatic sequential
   numbering (INV-YYYY-NNNNN).

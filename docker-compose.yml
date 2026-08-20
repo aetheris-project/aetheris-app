@@ -1,4 +1,4 @@
-# Aetheris control plane - full Docker stack.
+# Aetheris control panel - full Docker stack.
 #
 # Usage (works identically on Linux, macOS and Windows / Docker Desktop):
 #   docker compose up -d --build

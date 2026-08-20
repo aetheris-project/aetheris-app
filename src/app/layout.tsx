@@ -4,10 +4,10 @@ import "@/app/globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Aetheris - Control Plane",
+    default: "Aetheris - Control Panel",
     template: "%s | Aetheris"
   },
-  description: "Enterprise billing and virtualization management control plane.",
+  description: "Enterprise billing and virtualization management control panel.",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",

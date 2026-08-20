@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 #
-# Aetheris control plane - multi-stage image.
+# Aetheris control panel - multi-stage image.
 # Builds the Next.js app and keeps the runtime image minimal. The same image
 # runs both the web server (next start) and the BullMQ workers (npm run
 # worker); docker-compose.yml wires the two entrypoints.

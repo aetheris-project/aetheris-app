@@ -1,4 +1,4 @@
-# Aetheris control plane - SQLite development stack.
+# Aetheris control panel - SQLite development stack.
 #
 # Same services as docker-compose.yml but without the PostgreSQL container:
 # the Prisma app and the Python backend both persist to local .db files

@@ -52,7 +52,7 @@ export default async function AdminCronPage() {
           <p className="aetheris-kicker">Admin</p>
           <h1 className="mt-3 text-2xl font-bold tracking-tight">Scheduled tasks</h1>
           <p className="mt-2 text-sm text-muted">
-            Cron jobs executed by the control plane worker (BullMQ schedule).
+            Cron jobs executed by the control panel worker (BullMQ schedule).
           </p>
         </div>
       </div>

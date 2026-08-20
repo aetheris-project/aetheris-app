@@ -76,14 +76,14 @@ async function main(): Promise<void> {
     });
   }
 
-  const CRON_JOBS = [
+  const CRON_JOBS: Array<{ name: string; description: string; schedule: string; task: string; enabled?: boolean }> = [
     { name: "Nightly backups", description: "Snapshot every server and prune old backups", schedule: "0 3 * * *", task: "backup" },
     { name: "Invoice dunning", description: "Send payment reminders for pending and overdue invoices", schedule: "0 9 * * *", task: "invoice.dunning" },
     { name: "Snapshot prune", description: "Remove backups past retention", schedule: "30 4 * * *", task: "snapshot.prune" },
     { name: "Pterodactyl sync", description: "Reconcile server state with the Pterodactyl panel", schedule: "*/15 * * * *", task: "sync.pterodactyl" },
     { name: "Proxmox sync", description: "Reconcile nodes and VMs with Proxmox VE", schedule: "*/10 * * * *", task: "sync.proxmox" },
     { name: "Daily report", description: "Compile and deliver the daily operations report", schedule: "0 7 * * *", task: "report.daily", enabled: false }
-  ] as const;
+  ];
 
   for (const job of CRON_JOBS) {
     await prisma.cronJob.upsert({

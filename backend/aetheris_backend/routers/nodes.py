@@ -56,9 +56,10 @@ def get_telemetry(node_id: int, db=Depends(get_db)) -> TelemetryOut:
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Node not found")
     # Small deterministic jitter so repeated polls look like live telemetry.
+    # Clamped to [0, 99]: utilization can never report negative values.
     return TelemetryOut(
         node_id=node_id,
-        cpu=min(99, row["cpu"] + random.randint(-2, 2)),
-        ram=min(99, row["ram"] + random.randint(-2, 2)),
-        disk=min(99, row["disk"] + random.randint(-1, 1)),
+        cpu=max(0, min(99, row["cpu"] + random.randint(-2, 2))),
+        ram=max(0, min(99, row["ram"] + random.randint(-2, 2))),
+        disk=max(0, min(99, row["disk"] + random.randint(-1, 1))),
     )

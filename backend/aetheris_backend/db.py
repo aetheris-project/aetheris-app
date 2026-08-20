@@ -64,7 +64,53 @@ CREATE TABLE IF NOT EXISTS invoices (
     description TEXT NOT NULL,
     amount_cents INTEGER NOT NULL,
     due_date TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'pending'
+    status TEXT NOT NULL DEFAULT 'pending',
+    currency TEXT NOT NULL DEFAULT 'EUR',
+    subtotal_cents INTEGER NOT NULL DEFAULT 0,
+    discount_cents INTEGER NOT NULL DEFAULT 0,
+    tax_cents INTEGER NOT NULL DEFAULT 0,
+    coupon_code TEXT,
+    provider TEXT,
+    paid_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS invoice_lines (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    invoice_id INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    unit_cents INTEGER NOT NULL,
+    tax_rate_pct INTEGER NOT NULL DEFAULT 0,
+    total_cents INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS coupons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE,
+    description TEXT NOT NULL DEFAULT '',
+    percent_off INTEGER,
+    amount_off_cents INTEGER,
+    currency TEXT NOT NULL DEFAULT 'EUR',
+    max_uses INTEGER NOT NULL DEFAULT 0,
+    used_count INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 1,
+    expires_at TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    invoice_id INTEGER NOT NULL,
+    provider TEXT NOT NULL,
+    provider_payment_id TEXT,
+    amount_cents INTEGER NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'EUR',
+    status TEXT NOT NULL DEFAULT 'pending',
+    failure_reason TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (invoice_id) REFERENCES invoices(id)
 );
 
 CREATE TABLE IF NOT EXISTS settings (
@@ -127,11 +173,33 @@ def get_db(db_path: str | None = None) -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+# Columns added to `invoices` after the first release. Applied idempotently
+# so existing demo databases keep working without a destructive reset.
+_INVOICE_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("currency", "TEXT NOT NULL DEFAULT 'EUR'"),
+    ("subtotal_cents", "INTEGER NOT NULL DEFAULT 0"),
+    ("discount_cents", "INTEGER NOT NULL DEFAULT 0"),
+    ("tax_cents", "INTEGER NOT NULL DEFAULT 0"),
+    ("coupon_code", "TEXT"),
+    ("provider", "TEXT"),
+    ("paid_at", "TEXT"),
+)
+
+
+def _migrate(conn: sqlite3.Connection) -> None:
+    """Add columns introduced after the original schema, without data loss."""
+    existing = {row["name"] for row in conn.execute("PRAGMA table_info(invoices)")}
+    for name, ddl in _INVOICE_COLUMNS:
+        if name not in existing:
+            conn.execute(f"ALTER TABLE invoices ADD COLUMN {name} {ddl}")  # noqa: S608 - column names are static
+
+
 def init_db(db_path: str | None = None) -> None:
-    """Create all tables if they do not exist yet."""
+    """Create all tables if they do not exist yet and apply incremental migrations."""
     conn = connect(db_path)
     try:
         conn.executescript(SCHEMA)
+        _migrate(conn)
         conn.commit()
     finally:
         conn.close()

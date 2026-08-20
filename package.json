@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Aetheris core billing system, admin control plane, hypervisor drivers and client portal.",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "AGPL-3.0",
   "scripts": {
     "dev": "next dev",
     "prebuild": "prisma generate && prisma generate --schema prisma/sqlite/schema.prisma",

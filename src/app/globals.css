@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 /*
- * Aetheris Design System v2 - control panel surfaces.
- * Mirrors the website tokens: deep charcoal base, glass buttons,
- * gradient cards and accent injection via data-accent.
+ * Aetheris Design System v3 - control panel surfaces.
+ * Mirrors the website tokens: grain overlay, dual-orb lighting, glass
+ * buttons, gradient cards and accent injection via data-accent.
  */
 
 :root {
@@ -41,20 +41,64 @@
   border-color: rgb(var(--aetheris-border) / 0.8);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
   background-color: rgb(var(--aetheris-bg));
+  background-image:
+    radial-gradient(1100px 480px at 0% -10%, color-mix(in srgb, rgb(var(--aetheris-accent)) 16%, transparent), transparent 55%),
+    radial-gradient(800px 360px at 100% 0%, color-mix(in srgb, rgb(var(--aetheris-accent-strong)) 10%, transparent), transparent 60%);
   color: rgb(var(--aetheris-fg));
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
   background-color: var(--aetheris-accent-soft);
+  color: rgb(var(--aetheris-fg));
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--aetheris-border)) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--aetheris-border));
+  border-radius: 8px;
 }
 
 @layer components {
   .aetheris-card {
-    @apply relative rounded-2xl border border-edge bg-surface;
-    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 45%);
+    @apply relative rounded-2xl border border-edge bg-surface/80 backdrop-blur-sm;
+    background-image:
+      linear-gradient(180deg, rgb(255 255 255 / 0.04), transparent 42%),
+      linear-gradient(180deg, rgb(var(--aetheris-surface) / 0.92), rgb(var(--aetheris-surface) / 0.92));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.04) inset,
+      0 18px 40px -28px rgb(0 0 0 / 0.7);
   }
 
   .aetheris-card-hover {
@@ -65,15 +109,16 @@ body {
     @apply -translate-y-0.5 border-accent/40;
     box-shadow:
       0 16px 44px -16px rgb(0 0 0 / 0.7),
-      0 12px 36px -12px color-mix(in srgb, var(--aetheris-accent) 30%, transparent);
+      0 0 0 1px color-mix(in srgb, rgb(var(--aetheris-accent)) 12%, transparent),
+      0 12px 36px -12px color-mix(in srgb, rgb(var(--aetheris-accent)) 30%, transparent);
   }
 
   .aetheris-btn-primary {
     @apply inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold text-[#09090B] transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50;
-    background-image: linear-gradient(135deg, var(--aetheris-accent), var(--aetheris-accent-strong));
+    background-image: linear-gradient(135deg, rgb(var(--aetheris-accent)), rgb(var(--aetheris-accent-strong)));
     box-shadow:
       0 1px 2px rgb(0 0 0 / 0.5),
-      0 10px 28px -10px color-mix(in srgb, var(--aetheris-accent) 55%, transparent);
+      0 10px 28px -10px color-mix(in srgb, rgb(var(--aetheris-accent)) 55%, transparent);
   }
 
   .aetheris-btn-primary:hover {
@@ -85,8 +130,28 @@ body {
     @apply inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-xl border border-edge bg-white/[0.03] px-4 text-sm font-medium text-ink backdrop-blur-sm transition-all duration-200 hover:border-accent/40 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50;
   }
 
+  .aetheris-btn-ghost {
+    @apply inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg px-3 text-sm font-medium text-muted transition-colors duration-200 hover:bg-raised hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
   .aetheris-kicker {
     @apply text-xs font-semibold uppercase tracking-[0.18em] text-accent;
+  }
+
+  .aetheris-icon {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-accent-soft text-accent shadow-[0_0_24px_-8px_color-mix(in_srgb,rgb(var(--aetheris-accent))_55%,transparent)];
+  }
+
+  .aetheris-input {
+    @apply h-9 w-full rounded-lg border border-edge bg-base/80 px-3 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-accent/50 focus:ring-2 focus:ring-accent/20;
+  }
+
+  .aetheris-nav-link {
+    @apply flex h-9 items-center gap-2.5 rounded-lg px-3 text-sm text-muted transition-colors hover:bg-raised hover:text-ink;
+  }
+
+  .aetheris-nav-link-active {
+    @apply bg-accent-soft font-medium text-accent shadow-[inset_0_0_0_1px_color-mix(in_srgb,rgb(var(--aetheris-accent))_22%,transparent)];
   }
 }
 
@@ -102,4 +167,35 @@ body {
 
 .animate-pulse-dot {
   animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.scanline::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 100%
+  );
+  background-size: 100% 4px;
+  animation: scanline 7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-dot,
+  .scanline::after {
+    animation: none;
+  }
 }

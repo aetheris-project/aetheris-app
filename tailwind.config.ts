@@ -22,7 +22,7 @@ const config: Config = {
         warning: "rgb(var(--aetheris-warning) / <alpha-value>)"
       },
       fontFamily: {
-        sans: ["system-ui", "sans-serif"],
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       }
     }

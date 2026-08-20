@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { demoClientServers } from "@/lib/demo-data";
+import Link from "next/link";
 import { Cpu, HardDrive, MemoryStick, Server, TerminalSquare } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -40,16 +41,12 @@ export default async function ClientPortalPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <header className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Your servers</h1>
-          <p className="mt-1 text-sm text-muted">
-            Power control, console access and billing are managed from this portal.
-          </p>
-        </div>
-        <a href="/api/auth/signout" className="aetheris-btn-secondary">
-          Sign out
-        </a>
+      <header>
+        <p className="aetheris-kicker">Portal</p>
+        <h1 className="mt-3 text-2xl font-bold tracking-tight">Your servers</h1>
+        <p className="mt-1 text-sm text-muted">
+          Power control, console access and billing are managed from this portal.
+        </p>
       </header>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -58,7 +55,7 @@ export default async function ClientPortalPage() {
           return (
             <div key={stat.label} className="aetheris-card aetheris-card-hover p-5">
               <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-accent/20 bg-accent-soft text-accent">
+                <span className="aetheris-icon h-9 w-9">
                   <Icon className="h-4 w-4" aria-hidden="true" />
                 </span>
                 <div>
@@ -73,8 +70,8 @@ export default async function ClientPortalPage() {
         })}
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08]">
-        <div className="flex items-center justify-between border-b border-white/[0.06] bg-white/[0.03] px-4 py-3">
+      <div className="aetheris-card mt-8 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-edge bg-raised/40 px-4 py-3">
           <span className="text-sm font-semibold tracking-tight">Server inventory</span>
           <span className="text-xs text-faint">{servers.length} total</span>
         </div>
@@ -88,11 +85,11 @@ export default async function ClientPortalPage() {
               <th scope="col" className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.06]">
+          <tbody className="divide-y divide-edge">
             {servers.map((server) => {
               const resources = server.resources as { vcpu?: number; memoryMb?: number; diskMb?: number };
               return (
-                <tr key={server.id} className="transition-colors hover:bg-white/[0.02]">
+                <tr key={server.id} className="transition-colors hover:bg-raised/40">
                   <td className="px-4 py-3 font-medium">{server.name}</td>
                   <td className="px-4 py-3">
                     <span
@@ -112,10 +109,13 @@ export default async function ClientPortalPage() {
                   </td>
                   <td className="px-4 py-3 font-mono text-xs text-muted">{server.ipv4 ?? "-"}</td>
                   <td className="px-4 py-3 text-right">
-                    <span className="inline-flex items-center gap-1.5 text-xs text-faint">
+                    <Link
+                      href={`/console/${server.id}`}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-edge bg-raised/60 px-2.5 py-1 text-xs text-muted transition-colors hover:border-accent/40 hover:text-ink"
+                    >
                       <TerminalSquare className="h-3.5 w-3.5" aria-hidden="true" />
                       Console
-                    </span>
+                    </Link>
                   </td>
                 </tr>
               );

@@ -60,7 +60,7 @@ export default async function AdminSftpPage() {
             enabled: formData.get("enabled") === "on"
           });
         }}
-        className="mt-8 grid gap-3 rounded-2xl border border-edge bg-raised/30 p-5 sm:grid-cols-2 lg:grid-cols-5"
+        className="mt-8 grid gap-3 rounded-2xl border border-edge bg-surface/70 p-5 shadow-[0_18px_40px_-28px_rgb(0_0_0/0.7)] backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-5"
       >
         <div className="flex flex-col gap-1">
           <label htmlFor="sftp-server" className="text-[11px] font-medium uppercase tracking-wider text-faint">
@@ -70,7 +70,7 @@ export default async function AdminSftpPage() {
             id="sftp-server"
             name="serverId"
             required
-            className="h-9 rounded-lg border border-edge bg-base px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           >
             {servers.map((server) => (
               <option key={server.id} value={server.id}>
@@ -89,7 +89,7 @@ export default async function AdminSftpPage() {
             required
             placeholder="webuser"
             pattern="[a-z][a-z0-9_]{1,31}"
-            className="h-9 rounded-lg border border-edge bg-base px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -100,7 +100,7 @@ export default async function AdminSftpPage() {
             id="sftp-home"
             name="homePath"
             defaultValue="/home/container"
-            className="h-9 rounded-lg border border-edge bg-base px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex flex-col gap-1">

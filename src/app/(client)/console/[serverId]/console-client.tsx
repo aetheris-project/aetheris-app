@@ -108,7 +108,7 @@ export function ConsoleClient({
   const active = CLIENTS.find((candidate) => candidate.id === client) ?? CLIENTS[0]!;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-edge bg-surface">
+    <div className="overflow-hidden rounded-2xl border border-edge bg-surface/80 shadow-[0_18px_40px_-28px_rgb(0_0_0/0.7)] backdrop-blur-sm">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-edge px-4 py-3">
         <div className="flex items-center gap-2">

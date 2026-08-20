@@ -84,7 +84,7 @@ export default async function AdminOverviewPage() {
           return (
             <div key={stat.label} className="aetheris-card aetheris-card-hover p-6">
               <div className="flex items-start justify-between">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-accent-soft text-accent">
+                <span className="aetheris-icon">
                   <Icon className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-success">
@@ -121,7 +121,7 @@ export default async function AdminOverviewPage() {
                 </div>
                 <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-raised">
                   <div
-                    className="h-full rounded-full bg-accent transition-all duration-500"
+                    className="h-full rounded-full bg-accent shadow-[0_0_12px_color-mix(in_srgb,rgb(var(--aetheris-accent))_55%,transparent)] transition-all duration-500"
                     style={{ width: `${item.value}%` }}
                   />
                 </div>

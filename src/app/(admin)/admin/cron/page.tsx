@@ -69,7 +69,7 @@ export default async function AdminCronPage() {
             enabled: formData.get("enabled") === "on"
           });
         }}
-        className="mt-8 grid gap-3 rounded-2xl border border-edge bg-raised/30 p-5 sm:grid-cols-2 lg:grid-cols-5"
+        className="mt-8 grid gap-3 rounded-2xl border border-edge bg-surface/70 p-5 shadow-[0_18px_40px_-28px_rgb(0_0_0/0.7)] backdrop-blur-sm sm:grid-cols-2 lg:grid-cols-5"
       >
         <div className="flex flex-col gap-1">
           <label htmlFor="cron-name" className="text-[11px] font-medium uppercase tracking-wider text-faint">
@@ -80,7 +80,7 @@ export default async function AdminCronPage() {
             name="name"
             required
             placeholder="Nightly backups"
-            className="h-9 rounded-lg border border-edge bg-base px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -93,7 +93,7 @@ export default async function AdminCronPage() {
             required
             defaultValue="0 3 * * *"
             placeholder="0 3 * * *"
-            className="h-9 rounded-lg border border-edge bg-base px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 font-mono text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex flex-col gap-1">
@@ -104,7 +104,7 @@ export default async function AdminCronPage() {
             id="cron-task"
             name="task"
             defaultValue="backup"
-            className="h-9 rounded-lg border border-edge bg-base px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           >
             {TASKS.map((task) => (
               <option key={task.id} value={task.id}>
@@ -121,7 +121,7 @@ export default async function AdminCronPage() {
             id="cron-desc"
             name="description"
             placeholder="Optional note"
-            className="h-9 rounded-lg border border-edge bg-base px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50"
+            className="h-9 rounded-lg border border-edge bg-base/80 px-3 text-sm text-ink outline-none transition-colors focus:border-accent/50 focus:ring-2 focus:ring-accent/20"
           />
         </div>
         <div className="flex items-end gap-3">

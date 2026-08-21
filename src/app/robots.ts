@@ -1,12 +1,6 @@
 import type { MetadataRoute } from "next";
 
-/**
- * Crawler rules for the control panel.
- *
- * The public client portal and login are indexable; the admin control
- * plane and internal API surfaces are excluded from search engines.
- */
-const APP_URL = process.env.AETHERIS_APP_URL ?? "https://app.aetheris.enterprise";
+const SITE_URL = "https://aetheris-panel.vercel.app";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -14,9 +8,10 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api/", "/_next/static/"]
+        disallow: ["/api/", "/_next/static/", "/console/"]
       }
     ],
-    host: APP_URL
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: SITE_URL
   };
 }

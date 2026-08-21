@@ -6,16 +6,46 @@ import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get("email") ?? "").trim();
+    const password = String(formData.get("password") ?? "");
+    const firstName = String(formData.get("firstName") ?? "").trim();
+    const lastName = String(formData.get("lastName") ?? "").trim();
+
+    if (!firstName || !lastName) {
+      setError("Please enter your name.");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      setLoading(false);
+      return;
+    }
+
+    // Simulate registration delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // In demo mode, redirect to login
     window.location.href = "/login";
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-xs text-danger">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <label htmlFor="firstName" className="block text-[11px] font-medium uppercase tracking-wider text-faint">

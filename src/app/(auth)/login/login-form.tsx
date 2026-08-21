@@ -6,18 +6,61 @@ import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
     setLoading(true);
-    // Simulate login delay for demo
-    await new Promise((resolve) => setTimeout(resolve, 1200));
-    // In production this would call the auth API
-    window.location.href = "/";
+
+    const formData = new FormData(e.currentTarget);
+    const email = String(formData.get("email") ?? "").toLowerCase().trim();
+    const password = String(formData.get("password") ?? "");
+
+    // Simulate authentication delay
+    await new Promise((resolve) => setTimeout(resolve, 800));
+
+    // Demo credential validation
+    const isAdmin = email.startsWith("admin");
+    const isUser = email.startsWith("user") || email.startsWith("client");
+
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      setLoading(false);
+      return;
+    }
+
+    // In demo mode: any email/password works. Admin emails route to /admin.
+    // Store the demo session in localStorage for the client-side layouts.
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "aetheris-demo-session",
+        JSON.stringify({
+          email,
+          name: isAdmin ? "Admin User" : "Client User",
+          role: isAdmin ? "admin" : "user",
+          image: null,
+          loginAt: new Date().toISOString()
+        })
+      );
+    }
+
+    // Route based on email prefix
+    if (isAdmin) {
+      window.location.href = "/admin";
+    } else {
+      window.location.href = "/";
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-xs text-danger">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-1.5">
         <label
           htmlFor="email"
@@ -31,7 +74,7 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          placeholder="you@company.com"
+          placeholder="admin@aetheris.io or user@aetheris.io"
           className="aetheris-input h-11 px-4"
         />
       </div>

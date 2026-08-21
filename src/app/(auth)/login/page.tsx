@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import { AetherisLogo } from "@/components/AetherisLogo";
 import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = {
@@ -12,10 +13,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-base px-4 py-12">
       {/* Ambient glow */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        aria-hidden="true"
-      >
+      <div className="pointer-events-none fixed inset-0 z-0" aria-hidden="true">
         <div className="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[120px]" />
         <div className="absolute bottom-0 right-0 h-[400px] w-[600px] translate-x-1/4 translate-y-1/4 rounded-full bg-accent-strong/8 blur-[100px]" />
       </div>
@@ -24,14 +22,30 @@ export default function LoginPage() {
         {/* Logo and header */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2.5" aria-label="Aetheris home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-accent text-base font-extrabold shadow-[0_0_30px_-4px_color-mix(in_srgb,rgb(var(--aetheris-accent))_75%,transparent)] ring-1 ring-white/10">
-              A
-            </span>
+            <AetherisLogo size={44} className="drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]" />
           </Link>
           <h1 className="mt-6 text-2xl font-bold tracking-tight">Welcome back</h1>
           <p className="mt-2 text-sm text-muted">
             Sign in to access your servers, billing and management control panel.
           </p>
+        </div>
+
+        {/* Demo credentials banner */}
+        <div className="mb-4 rounded-xl border border-accent/30 bg-accent-soft p-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-accent">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-dot" />
+            Demo mode - use any credentials below
+          </div>
+          <div className="mt-2 grid grid-cols-2 gap-2 text-[11px]">
+            <div className="rounded-lg border border-edge bg-base/60 p-2">
+              <div className="font-medium text-ink">Admin account</div>
+              <div className="mt-0.5 font-mono text-faint">admin@aetheris.io / admin</div>
+            </div>
+            <div className="rounded-lg border border-edge bg-base/60 p-2">
+              <div className="font-medium text-ink">Client account</div>
+              <div className="mt-0.5 font-mono text-faint">user@aetheris.io / user</div>
+            </div>
+          </div>
         </div>
 
         {/* Login card */}

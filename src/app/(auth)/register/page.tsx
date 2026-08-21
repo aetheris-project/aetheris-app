@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
+import { AetherisLogo } from "@/components/AetherisLogo";
 import { RegisterForm } from "./register-form";
 
 export const metadata: Metadata = {
@@ -19,9 +20,7 @@ export default function RegisterPage() {
       <div className="relative z-10 w-full max-w-md">
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2.5" aria-label="Aetheris home">
-            <span className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-accent text-base font-extrabold shadow-[0_0_30px_-4px_color-mix(in_srgb,rgb(var(--aetheris-accent))_75%,transparent)] ring-1 ring-white/10">
-              A
-            </span>
+            <AetherisLogo size={44} className="drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]" />
           </Link>
           <h1 className="mt-6 text-2xl font-bold tracking-tight">Create your account</h1>
           <p className="mt-2 text-sm text-muted">

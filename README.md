@@ -1,93 +1,105 @@
 <p align="center">
-  <img src="assets/icon.svg" alt="Aetheris" width="88">
+  <picture>
+    <img src="assets/icon.svg" alt="Aetheris" width="100" style="filter: drop-shadow(0 0 24px rgba(16,185,129,0.55))">
+  </picture>
 </p>
 
 <h1 align="center">Aetheris App</h1>
 
 <p align="center">
-  <strong>Enterprise billing and virtualization management control panel</strong>
+  <strong>Enterprise billing &amp; virtualization management control panel</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript&logoColor=white" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Next.js-14-black?logo=next.js" alt="Next.js">
-  <img src="https://img.shields.io/badge/Prisma-5-2D3748?logo=prisma" alt="Prisma">
-  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Redis-7-DC382D?logo=redis" alt="Redis">
-  <img src="https://img.shields.io/badge/BullMQ-5-CA4221?logo=redis" alt="BullMQ">
+  <a href="https://aetheris-docs.vercel.app"><img src="https://img.shields.io/badge/Docs-Read%20the%20wiki-0EA5E9?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Docs"></a>
+  <a href="https://aetheris-panel.vercel.app/admin"><img src="https://img.shields.io/badge/Demo-Open%20Panel-F59E0B?style=for-the-badge&logo=vercel&logoColor=white" alt="Demo"></a>
+  <a href="https://discord.gg/6GcfebuT2A"><img src="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-5.6-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=next.js&logoColor=white" alt="Next.js">
+  <img src="https://img.shields.io/badge/Prisma-5-2D3748?style=flat-square&logo=prisma&logoColor=white" alt="Prisma">
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/Redis-7-DC382D?style=flat-square&logo=redis&logoColor=white" alt="Redis">
+  <img src="https://img.shields.io/badge/BullMQ-5-CA4221?style=flat-square&logo=redis" alt="BullMQ">
+  <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=flat-square&logo=fastapi" alt="FastAPI">
 </p>
 
 ---
 
-Enterprise billing and virtualization management control panel. Aetheris converges
-WHMCS, FOSSBilling, Pterodactyl Panel, Proxmox VE and VirtFusion into a single
-platform: one billing engine, one client portal, and one set of hypervisor
-drivers, with total admin control and dynamic whitelabeling.
+<br>
 
-The codebase is strict-mode TypeScript end to end, modular around SOLID
-principles, and ships SSR-first with a zero-layout-shift dark enterprise UI.
+> **Aetheris App** is the billing core, control panel, hypervisor drivers and client
+> portal rolled into a single monorepo. It converges **WHMCS, FOSSBilling,
+> Pterodactyl Panel, Proxmox VE and VirtFusion** into one platform.
+>
+> Strict-mode TypeScript end to end, SOLID modular architecture, SSR-first and
+> zero-layout-shift dark enterprise UI.
 
-## Architecture
+<br>
 
-### System context
+## ✨ Features
 
+| Billing | Hypervisors | Client & Admin | Ops |
+|---|---|---|---|
+| 💳 **Unified billing engine** | 📦 **Universal driver contract** | 🌐 **Client portal** | 👷 **BullMQ workers** |
+| Invoices, Subscriptions | Pterodactyl (App + Client) | VNC console (WS) | Provisioning · Billing |
+| Proration · Dunning · Tax | Proxmox VE API v2 (QEMU/LXC) | Backups · Power control | Telemetry · Email |
+| Stripe / PayPal / Mollie | VirtFusion REST | 🛠️ **Admin panel** | Webhooks fan-out |
+|  | cPanel/WHM · DirectAdmin | Nodes · Allocations | 🔐 **Encrypted secrets** |
+|  |  | Nest/Egg targeting | AES-256-GCM credentials |
+|  |  | 💠 **Whitelabel** | ⚙️ **Backend API** |
+|  |  | Name · Logos · Colors | Python FastAPI |
+|  |  | Email · Custom domain | Auth · Provisioning |
+|  |  | **0 rebuilds — runtime only** | Billing callbacks |
+
+<br>
+
+## 🏗️ Architecture
+
+### System Context
 ```mermaid
 flowchart LR
   subgraph Clients
-    Visitor[Marketing visitor]
-    ClientUser[Client portal user]
-    Admin[Platform administrator]
+    Visitor[🧑‍💻 Marketing visitor]
+    ClientUser[👤 Client portal]
+    Admin[🛡️ Platform admin]
   end
 
-  subgraph Vercel[Vercel edge]
+  subgraph Edge[Vercel Edge]
     Site[aetheris-website]
     App[aetheris-app web]
   end
 
-  subgraph Backend[Aetheris backend]
-    Billing[Billing engine]
-    AdminPlane[Admin control panel]
-    Workers[BullMQ workers]
+  subgraph Core[Aetheris core]
+    Billing[💰 Billing engine]
+    AdminPlane[🛠️ Admin panel]
+    Workers[⚙️ BullMQ workers]
     Redis[(Redis)]
     Postgres[(PostgreSQL)]
   end
 
-  subgraph Providers[External systems]
-    Ptero[Pterodactyl Panel]
-    PVE[Proxmox VE]
-    VF[VirtFusion]
-    CPanel[cPanel / WHM]
-    DA[DirectAdmin]
-    CF[Cloudflare]
-    Pay[Stripe / PayPal / Mollie]
-    Reg[Namecheap / Cloudflare Registrar]
+  subgraph External[Integrations]
+    Ptero[🦕 Pterodactyl]
+    PVE[🖥️ Proxmox VE]
+    VF[⚡ VirtFusion]
+    Pay[💳 Stripe/PayPal/Mollie]
+    CF[🌐 Cloudflare]
+    Reg[📝 Namecheap]
   end
 
   Visitor --> Site
   ClientUser --> App
   Admin --> App
-
-  App --> Billing
-  App --> AdminPlane
-  Billing --> Workers
-  AdminPlane --> Workers
-  Workers --> Redis
-  Workers --> Postgres
-  App --> Postgres
-  App --> Redis
-
-  AdminPlane --> Ptero
-  AdminPlane --> PVE
-  AdminPlane --> VF
-  AdminPlane --> CPanel
-  AdminPlane --> DA
-  AdminPlane --> CF
-  Billing --> Pay
-  Billing --> Reg
+  App --> Billing --> Workers
+  App --> AdminPlane --> Workers
+  Workers --> Redis & Postgres
+  AdminPlane --> Ptero & PVE & VF
+  Billing --> Pay & Reg & CF
 ```
 
-### Provisioning sequence
-
+### Provisioning Sequence
 ```mermaid
 sequenceDiagram
   participant C as Client portal
@@ -95,309 +107,151 @@ sequenceDiagram
   participant Q as BullMQ queue
   participant W as Provisioning worker
   participant D as Hypervisor driver
-  participant P as Pterodactyl / Proxmox / VirtFusion
+  participant P as Panel/VM
 
   C->>A: POST /api/servers (plan + node)
-  A->>A: authorize, validate limits, create Server row
+  A->>A: Authorize, validate, create row
   A->>Q: enqueue provision job
-  Q->>W: deliver job
-  W->>D: provision(ProvisionRequest)
-  D->>P: create workload (allocation, image, limits)
-  P-->>D: serverExternalId
+  Q->>W: deliver
+  W->>D: provision(request)
+  D->>P: create workload
+  P-->>D: externalId
   D-->>W: ProvisionResult
-  W->>A: mark Server installing -> running
-  W->>Q: enqueue telemetry + billing start
+  W->>A: mark installing → running
+  W->>Q: telemetry + billing start
   A-->>C: ServerInfo
 ```
 
-### Billing flow
+<br>
 
-```mermaid
-flowchart TD
-  Cycle[Cron: billing cycle] -->|collect| Invoices[Generate invoices]
-  Invoices --> Charge[Charge payment method]
-  Charge -->|succeeded| Paid[Invoice paid, provision continues]
-  Charge -->|failed| Dunning[Dunning: retry with backoff]
-  Dunning -->|retry exhausted| Suspend[Suspend workload via driver]
-  Suspend --> Notify[Email template: server.suspended]
-  Paid --> Receipt[Email template: invoice.paid]
-```
+## 🚀 Quickstart
 
-## Features
-
-- Unified billing engine: invoices, subscriptions, proration, dunning and tax,
-  wired to Stripe, PayPal and Mollie.
-- Universal hypervisor driver contract with native Pterodactyl (Application and
-  Client API), Proxmox VE API v2, VirtFusion REST, cPanel/WHM and DirectAdmin.
-- Client portal with server lifecycle, VNC console (WebSocket token issuance),
-  backups and payment methods.
-- Admin control panel: node management, allocation pools, nest/egg targeting,
-  backup policies, per-client resource limits.
-- Dynamic whitelabeling: brand, theme variables, navigation, email templates,
-  custom domain routing and integration toggles stored in PostgreSQL and cached
-  in Redis; no rebuild required.
-- Background orchestration with BullMQ: provisioning, billing runs, telemetry
-  collection and email delivery.
-- SSR-first rendering, dynamic sitemap/robots, OpenGraph generation and JSON-LD
-  structured data.
-- Strict-mode TypeScript, zod-validated configuration, zero layout shifts.
-
-## Repository layout
-
-```text
-aetheris-app/
-├── app/
-│   ├── (admin)/              # Admin control panel routes
-│   ├── (client)/             # Client portal routes
-│   └── api/                  # Route handlers (whitelabel, webhooks, drivers)
-├── bin/
-│   └── install.sh            # Non-interactive production installer
-├── backend/                  # Python REST API (FastAPI + SQLite)
-├── prisma/
-│   ├── schema.prisma         # PostgreSQL data model
-│   ├── sqlite/
-│   │   ├── schema.prisma     # SQLite variant (Json -> String fields)
-│   │   └── migrations/       # SQLite migration history
-│   └── seed.ts               # Initial plans and demo data
-├── src/
-│   ├── lib/
-│   │   ├── adapters/
-│   │   │   ├── hypervisors/  # Universal driver contract + backends
-│   │   │   │   ├── types.ts          # HypervisorDriver interface
-│   │   │   │   ├── pterodactyl.ts    # Application + Client API driver
-│   │   │   │   ├── proxmox.ts        # Proxmox VE API v2 driver
-│   │   │   │   ├── virtfusion.ts     # VirtFusion REST driver
-│   │   │   │   └── index.ts          # Zod-validated factory/registry
-│   │   │   └── payments/     # Stripe, PayPal, Mollie gateways
-│   │   ├── config/env.ts     # Zod-validated environment
-│   │   ├── db.ts             # Prisma singleton (Postgres or SQLite)
-│   │   ├── db-codec.ts       # JSON codec middleware for the SQLite client
-│   │   ├── redis.ts          # ioredis singleton
-│   │   └── queue.ts          # BullMQ queues and workers
-│   └── workers/              # Billing, provisioning, telemetry processors
-├── deploy/
-│   └── aetheris.conf         # Nginx site template (installer-generated)
-├── .env.example
-└── README.md
-```
-
-## Prerequisites
-
-| Component | Minimum | Notes |
-| --- | --- | --- |
-| Node.js | 20.x LTS | 18 is unsupported; requires native fetch and AbortSignal.timeout |
-| PostgreSQL | 16 | 15 works; 16 recommended |
-| Redis | 7.x | Required by BullMQ; 6.2+ also works |
-| Pterodactyl Panel | 1.11+ | Application and Client API keys with admin scope |
-| Proxmox VE | 7.x / 8.x | API v2, user with VM and container permissions |
-| VirtFusion | 2.x | Bearer token from the account area |
-| Ubuntu | 22.04 LTS | Debian 12 also supported |
-
-## Quickstart (development)
-
+### Development (local)
 ```bash
 cp .env.example .env          # fill DATABASE_URL and REDIS_URL
 npm install
 npx prisma migrate dev
-npm run dev                   # web on http://localhost:3000
+npm run dev                   # → http://localhost:3000
+npm run worker                # background queue workers
 ```
 
-Background workers run separately:
-
-```bash
-npm run worker
-```
-
-## Docker (all operating systems)
-
-The full stack ships as Docker images and runs identically on Linux, macOS
-and Windows (Docker Desktop with the WSL2 backend). It brings up PostgreSQL,
-Redis, the Next.js web server, the BullMQ worker and the Python backend:
-
+### Docker (any OS)
 ```bash
 docker compose up -d --build
+# Web UI:   http://localhost:3000
+# Backend:  http://localhost:8000/health
+# PG:       localhost:5432  ·  Redis: localhost:6379
 ```
 
-- Web UI: http://localhost:3000
-- Python backend: http://localhost:8000 (health: http://localhost:8000/health)
-- PostgreSQL: localhost:5432, Redis: localhost:6379
-
-#### Choose your database engine
-
-By default the stack runs with PostgreSQL. For local testing and quick
-evaluations you can run the entire platform against a **local SQLite `.db`
-file** (no database container at all):
-
+**SQLite mode (no DB container):**
 ```bash
 docker compose -f docker-compose.sqlite.yml up -d --build
 ```
 
-SQLite mode is selected automatically when `AETHERIS_DB_MODE=sqlite` or when
-`DATABASE_URL` starts with `file:`. The app ships a dedicated Prisma schema
-(`prisma/sqlite/schema.prisma`) and a JSON codec that maps the JSON columns to
-TEXT, so the same data model runs on both engines without code changes.
-
-Configuration is read from a local `.env` file (docker compose loads it
-automatically) or from the defaults in `docker-compose.yml`. Before going to
-production, set a strong `AETHERIS_SECRET` (>= 32 characters):
-
-```bash
-cp .env.example .env
-# edit .env, then
-AETHERIS_SECRET=$(openssl rand -hex 32)
-docker compose up -d --build
-```
-
-The container entrypoint (`docker/entrypoint.sh`) applies pending Prisma
-migrations on every boot, so a fresh database is ready on the first run. The
-web and worker services share one image; `command: web` / `command: worker`
-selects the entrypoint. Useful commands:
-
-```bash
-docker compose logs -f web       # follow the web server logs
- docker compose ps                # inspect healthchecks
- docker compose down              # stop the stack (volumes kept)
- docker compose down -v           # stop and wipe data volumes
-```
-
-#### Manage the stack (start / stop / status / logs)
-
-A cross-platform manager is included so the same commands work from
-PowerShell, bash and the Aetheris Windows installer:
-
-```bash
-# Linux / macOS / Git Bash on Windows
-bash scripts/manage.sh status        # container states (colored per service)
-bash scripts/manage.sh start         # docker compose up -d
-bash scripts/manage.sh stop          # docker compose stop (volumes kept)
-bash scripts/manage.sh restart
-bash scripts/manage.sh logs -f       # live console, tail the whole stack
-bash scripts/manage.sh logs --tail 300
-bash scripts/manage.sh down          # stop and wipe data volumes
-```
-
-```powershell
-# PowerShell on Windows (Docker Desktop)
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 status
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 start
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 stop
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 logs -Follow
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 logs -Tail 300
-powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 down
-```
-
-Both scripts detect the installed engine from `.env` (`AETHERIS_DB_MODE`)
-and pick `docker-compose.sqlite.yml` automatically; pass `--sqlite` /
-`-Sqlite` to force it. The Windows installer exposes the same operations in
-its "Manage the stack" menu (status, start, stop) plus a live logs console
-streaming `docker compose logs -f`.
-
-Build the images individually:
-
-```bash
-docker build -t aetheris-app .
-docker build -t aetheris-backend ./backend
-```
-
-> Windows note: install Docker Desktop (WSL2 backend) and run the commands
-> above from PowerShell or Git Bash. No native build tooling is required -
-> the images build the Node and Python runtimes for you.
-
-## Production installation
-
-The non-interactive installer performs system checks, database migrations,
-Redis verification, Pterodactyl API verification and super-admin creation:
-
+### Production install
 ```bash
 DATABASE_URL=postgresql://aetheris:secret@127.0.0.1:5432/aetheris \
 REDIS_URL=redis://127.0.0.1:6379 \
 AETHERIS_APP_URL=https://app.example.com \
 ADMIN_EMAIL=ops@example.com \
 ADMIN_PASSWORD='a-very-long-password' \
-PTERODACTYL_URL=https://panel.example.com \
-PTERODACTYL_APP_API_KEY=ptla_... \
 bash bin/install.sh --yes --systemd --nginx
 ```
 
-Full guidance, including the manual Nginx and Certbot walkthrough, lives in the
-[aetheris-docs installation guide](https://github.com/aetheris-project/aetheris-docs/blob/main/pages/wiki/installation.md).
+### Cross-platform manager
+```bash
+# Linux / macOS / Git Bash
+bash scripts/manage.sh status
+bash scripts/manage.sh logs -f
 
-## Environment variables
+# Windows PowerShell
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 status
+powershell -ExecutionPolicy Bypass -File scripts\manage.ps1 logs -Follow
+```
 
-All variables are validated at boot by `src/lib/config/env.ts`; an invalid or
-missing required value aborts startup with the exact field name.
+> 👉 **Full walkthroughs** in [aetheris-docs → Installation](https://aetheris-docs.vercel.app/wiki/installation)
 
-| Variable | Required | Default | Purpose |
-| --- | --- | --- | --- |
-| `DATABASE_URL` | yes | - | PostgreSQL connection string, or `file:./aetheris.db` for SQLite mode |
-| `AETHERIS_DB_MODE` | no | `postgres` | Database engine: `postgres` or `sqlite` (local `.db` file) |
-| `REDIS_URL` | yes | `redis://127.0.0.1:6379` | Redis connection string |
-| `AETHERIS_APP_URL` | yes | - | Public base URL of the control panel |
-| `AETHERIS_SECRET` | yes | - | Platform signing secret (>= 32 chars) |
-| `NEXTAUTH_URL` | no | - | NextAuth callback base URL |
-| `NEXTAUTH_SECRET` | no | - | NextAuth encryption secret |
-| `STRIPE_SECRET_KEY` | no | - | Stripe secret key |
-| `STRIPE_WEBHOOK_SECRET` | no | - | Stripe webhook signing secret |
-| `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET` | no | - | PayPal REST credentials |
-| `MOLLIE_API_KEY` | no | - | Mollie API key |
-| `PTERODACTYL_URL` | no | - | Panel base URL |
-| `PTERODACTYL_APP_API_KEY` | no | - | Panel Application API key |
-| `PTERODACTYL_CLIENT_API_KEY` | no | - | Panel Client API key |
-| `PROXMOX_URL` / `PROXMOX_USER` / `PROXMOX_PASSWORD` | no | - | Proxmox API v2 credentials |
-| `PROXMOX_VERIFY_TLS` | no | `true` | Verify Proxmox TLS certificates |
-| `VIRTFUSION_URL` / `VIRTFUSION_API_KEY` | no | - | VirtFusion REST credentials |
-| `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ZONE_ID` | no | - | Cloudflare DNS and registrar |
-| `NAMECHEAP_API_USER` / `NAMECHEAP_API_KEY` | no | - | Namecheap registrar |
-| `BULLMQ_CONCURRENCY` | no | `8` | Worker concurrency per queue |
+<br>
 
-## Hypervisor drivers
+## 📦 Repository Layout
 
-Every backend implements the `HypervisorDriver` interface in
-`src/lib/adapters/hypervisors/types.ts`, covering provisioning, rebuild,
-suspend, unsuspend, terminate, power actions, telemetry, WebSocket console
-sessions and backups. See the driver files for backend-specific notes:
+```text
+aetheris-app/
+├── app/
+│   ├── (admin)/              # Admin CP routes
+│   ├── (client)/             # Client portal
+│   └── api/whitelabel/       # Runtime branding (PG → Redis)
+├── backend/                  # 🐍 Python FastAPI + SQLite
+├── bin/install.sh            # Non-interactive production installer
+├── prisma/
+│   ├── schema.prisma         # PostgreSQL schema
+│   └── sqlite/               # SQLite variant + migrations
+├── src/
+│   ├── lib/
+│   │   ├── adapters/
+│   │   │   ├── hypervisors/  # Driver contract + backends
+│   │   │   └── payments/     # Gateways
+│   │   ├── config/env.ts     # Zod-validated env
+│   │   ├── db.ts / redis.ts / queue.ts
+│   │   └── db-codec.ts       # SQLite JSON → TEXT codec
+│   └── workers/              # Billing · provisioning · telemetry
+├── deploy/aetheris.conf      # Nginx template (installer)
+├── .env.example
+└── docker-compose.yml / sqlite variant
+```
 
-- `pterodactyl.ts` - Application API for lifecycle and eggs, Client API for
-  power, resources, console tokens and backups. Token-bucket rate limiting
-  included.
-- `proxmox.ts` - QEMU and LXC lifecycle over API v2, ticket authentication,
-  VNC proxy console sessions, snapshot backups.
-- `virtfusion.ts` - VM lifecycle over the REST API, snapshot backups; console
-  WebSocket is not part of the public API and raises `NOT_SUPPORTED`.
+<br>
 
-The registry (`index.ts`) validates stored configurations with zod and
-instantiates drivers; the Admin Panel persists encrypted credentials in the
-`HypervisorCredential` table.
+## 🧩 Hypervisor Drivers
 
-## Workers
+| Backend | Interface | Console | Backups |
+|---|---|---|---|
+| **Pterodactyl** | Application + Client API | ✅ Client API tokens | ✅ |
+| **Proxmox VE** | API v2 (QEMU + LXC) | ✅ VNC proxy | ✅ Snapshots |
+| **VirtFusion** | REST API | ❌ Not public | ✅ Snapshots |
+| **cPanel / WHM** | JSON API cPanel 2 | ❌ N/A | ❌ |
+| **DirectAdmin** | Plugin API | ❌ N/A | ❌ |
 
-BullMQ queues and their processors live in `src/workers`. Each queue has
-exponential backoff and retry policies defined in `src/lib/queue.ts`:
+Driver contract in [src/lib/adapters/hypervisors/types.ts](src/lib/adapters/hypervisors/types.ts).
 
-- `aetheris.billing` - invoice finalization, charging, dunning.
-- `aetheris.provisioning` - server creation and post-provision setup.
-- `aetheris.telemetry` - periodic resource sampling for dashboards.
-- `aetheris.email` - transactional email rendering and delivery.
-- `aetheris.webhooks` - outbound webhook fan-out.
+<br>
 
-## Security
+## 🔧 Prerequisites
 
-- Secrets are validated, never logged (the installer redacts credentials).
-- Hypervisor credentials are encrypted at rest with AES-256-GCM before being
-  written to the `HypervisorCredential` table.
-- Security headers (CSP, HSTS, frame and referrer policies) are applied at the
-  edge in `vercel.json`.
-- Password hashes use scrypt with per-user salt and constant-time comparison.
+| Component | Minimum | Notes |
+|---|---|---|
+| Node.js | **20.x LTS** | Requires native fetch · AbortSignal.timeout |
+| PostgreSQL | **16** | 15 works; 16 recommended |
+| Redis | **7.x** | BullMQ requirement; 6.2+ also works |
+| Pterodactyl | **1.11+** | App + Client API keys, admin scope |
+| Proxmox VE | **7.x / 8.x** | API v2 · VM + container perms |
+| VirtFusion | **2.x** | Bearer token |
+| Ubuntu | **22.04 LTS** | Debian 12 supported |
 
-## Related repositories
+---
 
-- [aetheris-website](https://github.com/aetheris-project/aetheris-website) -
-  marketing site and interactive product demo
-- [aetheris-docs](https://github.com/aetheris-project/aetheris-docs) - wiki,
-  installation guides and API specifications
-- [aetheris-installer](https://github.com/aetheris-project/aetheris-installer) -
-  automated cross-platform installer
+<p align="center">
+  <strong>Made with 💚 by <a href="https://github.com/Leo-Galli">Leonardo Galli</a></strong>
+</p>
 
-## License
+<p align="center">
+  <a href="https://github.com/aetheris-project/aetheris-docs">Docs</a>
+  ·
+  <a href="https://github.com/aetheris-project/aetheris-website">Website</a>
+  ·
+  <a href="https://github.com/aetheris-project/aetheris-installer">Installer</a>
+  ·
+  <a href="https://discord.gg/6GcfebuT2A">Discord</a>
+  ·
+  <a href="https://paypal.me/LeonardoGalliITA">Donate</a>
+</p>
 
-Aetheris is licensed under the [GNU Affero General Public License v3.0](LICENSE.md) (AGPL-3.0). You may use, study, modify and redistribute it for any purpose, provided that any distributed or network-served modified version keeps this license, preserves the copyright notice of the original author (Leonardo Galli / Leo-Galli) and releases its source code under AGPL-3.0. The Aetheris core and the author's credit may not be removed.
+## 📄 License
+
+Aetheris is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+See [LICENSE.md](LICENSE.md).
+
+> Any distributed or network-served modified version must keep this license,
+> preserve the copyright notice of the original author
+> (**Leonardo Galli / Leo-Galli**) and release source code under AGPL-3.0.
+> The Aetheris core and the author's credit may not be removed.

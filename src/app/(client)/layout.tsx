@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { AetherisLogo } from "@/components/AetherisLogo";
+import { LanguageTranslator } from "@/components/LanguageTranslator";
 import { LogOut, User, ShieldCheck } from "lucide-react";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
@@ -22,6 +23,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
               <span className="h-1.5 w-1.5 animate-pulse-dot rounded-full bg-success" />
               Operational
             </span>
+            <LanguageTranslator />
             <Link
               href="/admin"
               className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-edge bg-raised/60 px-3 text-xs font-medium text-muted transition-colors hover:border-accent/40 hover:text-ink"

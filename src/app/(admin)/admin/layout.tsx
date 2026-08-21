@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { AdminNav } from "./admin-nav";
 import { AetherisLogo } from "@/components/AetherisLogo";
+import { LanguageTranslator } from "@/components/LanguageTranslator";
 import { LogOut, User } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -26,6 +27,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <p className="mt-2 text-[11px] leading-5 text-faint">
             Platform configuration stored in PostgreSQL and Redis.
           </p>
+          <div className="mt-3 flex items-center justify-between">
+            <LanguageTranslator className="w-full" />
+          </div>
           <div className="mt-3 flex items-center justify-between rounded-lg border border-edge bg-raised/40 px-3 py-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/20 text-accent">

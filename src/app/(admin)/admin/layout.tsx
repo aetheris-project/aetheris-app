@@ -11,7 +11,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </span>
           <div className="min-w-0">
             <div className="text-sm font-semibold tracking-tight">Aetheris Admin</div>
-            <div className="text-[10px] uppercase tracking-wider text-faint">Control plane</div>
+            <div className="text-[10px] uppercase tracking-wider text-faint">Control panel</div>
           </div>
         </div>
         <AdminNav />

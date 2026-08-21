@@ -62,7 +62,7 @@ function RevenueChart() {
       </div>
       <div className="mt-4 flex items-center justify-between rounded-xl border border-edge bg-raised/40 p-3">
         <div className="text-xs text-muted">Current MRR</div>
-        <div className="text-sm font-bold">${(REVENUE_SERIES[REVENUE_SERIES.length - 1] / 100).toFixed(2)}</div>
+        <div className="text-sm font-bold">${((REVENUE_SERIES[REVENUE_SERIES.length - 1] ?? 0) / 100).toFixed(2)}</div>
       </div>
     </div>
   );

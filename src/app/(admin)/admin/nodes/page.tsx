@@ -11,7 +11,6 @@ import {
   Wifi
 } from "lucide-react";
 import { prisma } from "@/lib/db";
-import { demoNodes } from "@/lib/demo-data";
 
 export const dynamic = "force-dynamic";
 

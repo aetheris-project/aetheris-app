@@ -11,7 +11,6 @@ import {
   Save,
   Server,
   Shield,
-  Sparkles,
   Webhook
 } from "lucide-react";
 

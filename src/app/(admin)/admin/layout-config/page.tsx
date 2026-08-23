@@ -74,9 +74,11 @@ export default function LayoutConfigPage() {
       const target = direction === "up" ? idx - 1 : idx + 1;
       if (target < 0 || target >= sorted.length) return prev;
 
-      const newOrder = sorted[idx].order;
-      sorted[idx] = { ...sorted[idx], order: sorted[target].order };
-      sorted[target] = { ...sorted[target], order: newOrder };
+      const current = sorted[idx]!;
+      const swap = sorted[target]!;
+      const newOrder = current.order;
+      sorted[idx] = { ...current, order: swap.order };
+      sorted[target] = { ...swap, order: newOrder };
       return sorted;
     });
     setSaved(false);

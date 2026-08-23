@@ -21,7 +21,7 @@ const LANGUAGES = [
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
+  return match?.[1] ? decodeURIComponent(match[1]) : null;
 }
 
 function setCookie(name: string, value: string, days: number) {
@@ -45,10 +45,8 @@ function getCurrentLang(): string {
   const cookie = getCookie("googtrans");
   if (!cookie) return "en";
   const match = cookie.match(/\/en\/([a-zA-Z-]+)/);
-  if (match) {
-    const code = match[1];
-    if (LANGUAGES.some((l) => l.code === code)) return code;
-  }
+  const code = match?.[1];
+  if (code && LANGUAGES.some((l) => l.code === code)) return code;
   return "en";
 }
 

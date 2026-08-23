@@ -13,6 +13,7 @@
 <p align="center">
  <a href="https://aetheris-docs.vercel.app"><img src="https://img.shields.io/badge/Docs-Read%20the%20wiki-0EA5E9?style=for-the-badge&logo=readthedocs&logoColor=white" alt="Docs"></a>
  <a href="https://aetheris-panel.vercel.app/admin"><img src="https://img.shields.io/badge/Demo-Open%20Panel-F59E0B?style=for-the-badge&logo=vercel&logoColor=white" alt="Demo"></a>
+ <a href="https://github.com/aetheris-project/aetheris-android">Android</a>
  <a href="https://discord.gg/6GcfebuT2A"><img src="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
 </p>
 

@@ -239,7 +239,19 @@ Driver contract in [src/lib/adapters/hypervisors/types.ts](src/lib/adapters/hype
  ·
  <a href="https://github.com/aetheris-project/aetheris-website">Website</a>
  ·
+ <a href="https://github.com/aetheris-project/aetheris-addons">Addons</a>
+ ·
+ <a href="https://github.com/aetheris-project/aetheris-themes">Themes</a>
+ ·
+ <a href="https://github.com/aetheris-project/aetheris-game-eggs">Game Eggs</a>
+ ·
+ <a href="https://github.com/aetheris-project/aetheris-windows-installer">Windows Installer</a>
+ ·
  <a href="https://github.com/aetheris-project/aetheris-installer">Installer</a>
+ ·
+ <a href="https://github.com/aetheris-project/aetheris-ops">Ops</a>
+ ·
+ <a href="https://aetheris-status.vercel.app">Status</a>
  ·
  <a href="https://discord.gg/6GcfebuT2A">Discord</a>
  ·

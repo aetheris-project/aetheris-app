@@ -1,6 +1,6 @@
 <p align="center">
  <picture>
- <img src="assets/icon.svg" alt="Aetheris" width="100" style="filter: drop-shadow(0 0 24px rgba(16,185,129,0.55))">
+ <img src="https://raw.githubusercontent.com/aetheris-project/.github/main/assets/icon.svg" alt="Aetheris" width="100" style="filter: drop-shadow(0 0 24px rgba(16,185,129,0.55))">
  </picture>
 </p>
 
@@ -267,3 +267,34 @@ See [LICENSE.md](LICENSE.md).
 > preserve the copyright notice of the original author
 > (**Leonardo Galli / Leo-Galli**) and release source code under AGPL-3.0.
 > The Aetheris core and the author's credit may not be removed.
+
+---
+
+<p align="center">
+ <a href="https://aetheris-panel.vercel.app"><img src="https://img.shields.io/badge/Deployed-Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Deployed on Vercel"></a>
+ <a href="https://discord.gg/6GcfebuT2A"><img src="https://img.shields.io/badge/Discord-Join-5865F2?style=flat-square&logo=discord&logoColor=white" alt="Discord"></a>
+ <a href="https://github.com/aetheris-project"><img src="https://img.shields.io/badge/Organization-aetheris--project-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub"></a>
+</p>
+
+<p align="center">
+ <a href="https://github.com/aetheris-project/aetheris-docs">Docs</a>
+ | <a href="https://github.com/aetheris-project/aetheris-website">Website</a>
+ | <a href="https://github.com/aetheris-project/aetheris-addons">Addons</a>
+ | <a href="https://github.com/aetheris-project/aetheris-themes">Themes</a>
+ | <a href="https://github.com/aetheris-project/aetheris-game-eggs">Game Eggs</a>
+ | <a href="https://github.com/aetheris-project/aetheris-installer">Installer</a>
+ | <a href="https://github.com/aetheris-project/aetheris-windows-installer">Windows Installer</a>
+ | <a href="https://github.com/aetheris-project/aetheris-ops">Ops</a>
+ | <a href="https://github.com/aetheris-project/aetheris-status">Status</a>
+ | <a href="https://github.com/aetheris-project/aetheris-community">Community</a>
+</p>
+
+<p align="center">
+ <sub>Copyright (C) 2026 Leonardo Galli (Leo-Galli), Aetheris Project. Licensed under AGPL-3.0.</sub>
+</p>
+<p align="center">
+ <sub>All contributions require a Pull Request with automated CI checks (lint, typecheck, build) before manual review.</sub>
+</p>
+<p align="center">
+ <sub>Contact: <a href="mailto:hello@another-horizon.eu">hello@another-horizon.eu</a> | Discord: <a href="https://discord.gg/6GcfebuT2A">discord.gg/6GcfebuT2A</a></sub>
+</p>

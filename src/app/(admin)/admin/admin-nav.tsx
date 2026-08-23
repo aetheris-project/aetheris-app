@@ -8,10 +8,12 @@ import {
   CreditCard,
   FolderLock,
   LayoutDashboard,
+  LayoutGrid,
   Monitor,
   Palette,
   Server,
-  Settings
+  Settings,
+  Zap
 } from "lucide-react";
 
 const NAV = [
@@ -20,6 +22,8 @@ const NAV = [
   { href: "/admin/nodes", label: "Nodes", icon: Server },
   { href: "/admin/servers", label: "Servers", icon: Monitor },
   { href: "/admin/billing", label: "Billing", icon: CreditCard },
+  { href: "/admin/addons", label: "Addons", icon: Zap },
+  { href: "/admin/layout-config", label: "Layout", icon: LayoutGrid },
   { href: "/admin/cron", label: "Scheduled tasks", icon: CalendarClock },
   { href: "/admin/sftp", label: "SFTP users", icon: FolderLock },
   { href: "/admin/whitelabel", label: "Whitelabel", icon: Palette },

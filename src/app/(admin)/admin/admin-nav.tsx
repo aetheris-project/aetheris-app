@@ -38,11 +38,11 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function AdminNav() {
+export function AdminNav({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex-1 space-y-1 p-3" aria-label="Admin">
+    <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Admin">
       {NAV.map((item) => {
         const Icon = item.icon;
         const active = isActive(pathname, item.href);
@@ -50,11 +50,12 @@ export function AdminNav() {
           <Link
             key={item.href}
             href={item.href}
+            onClick={onNavigate}
             className={`aetheris-nav-link ${active ? "aetheris-nav-link-active" : ""}`}
             aria-current={active ? "page" : undefined}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
-            {item.label}
+            <span className="truncate">{item.label}</span>
           </Link>
         );
       })}

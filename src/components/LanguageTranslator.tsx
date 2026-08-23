@@ -52,11 +52,14 @@ function getCurrentLang(): string {
   return "en";
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare global {
   interface Window {
     google?: {
       translate?: {
-        TranslateElement?: new (options: object, id: string) => void;
+        TranslateElement?: (new (options: Record<string, unknown>, id: string) => void) & {
+          InlineLayout?: { SIMPLE: number };
+        };
       };
     };
     googleTranslateElementInit?: () => void;
@@ -127,7 +130,7 @@ function initWidget() {
     // Prevent double init
     if (container.querySelector("iframe")) return;
 
-    const TE = window.google.translate.TranslateElement as any;
+    const TE = window.google.translate.TranslateElement;
     new TE(
       {
         pageLanguage: "en",

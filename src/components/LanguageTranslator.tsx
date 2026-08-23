@@ -65,15 +65,14 @@ declare global {
 }
 
 /**
- * Load the Google Translate script and initialize the hidden widget.
- * The widget reads the googtrans cookie on load and translates the page.
+ * Ensure Google Translate script is loaded and widget is initialized.
+ * Also injects a MutationObserver that marks elements that should NOT be translated.
  */
 function ensureGoogleTranslate() {
   if (typeof document === "undefined") return;
 
   // Already loaded
   if (document.getElementById("aetheris-gt-script")) {
-    // Re-init if widget not yet created
     if (window.google?.translate?.TranslateElement) {
       initWidget();
     }
@@ -104,6 +103,54 @@ function ensureGoogleTranslate() {
     document.head.appendChild(style);
   }
 
+  // MutationObserver: mark elements that should never be translated
+  if (!document.getElementById("aetheris-gt-observer")) {
+    const script = document.createElement("script");
+    script.id = "aetheris-gt-observer";
+    script.textContent = `
+      (function() {
+        // Elements that should never be translated (by selector)
+        var SKIP_SELECTORS = [
+          '.notranslate',
+          '[data-notranslate]',
+          'nav',
+          'header',
+          'footer',
+          '.lang-translator',
+          '.lang-translator *'
+        ];
+        function markElements(root) {
+          SKIP_SELECTORS.forEach(function(sel) {
+            try {
+              root.querySelectorAll(sel).forEach(function(el) {
+                if (el.getAttribute('translate') !== 'no') {
+                  el.setAttribute('translate', 'no');
+                  el.classList.add('notranslate');
+                }
+              });
+            } catch(e) {}
+          });
+        }
+        // Mark on load
+        if (document.body) markElements(document.body);
+        // Re-mark on DOM changes (React hydration, navigation)
+        var obs = new MutationObserver(function(mutations) {
+          mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+              if (node.nodeType === 1) {
+                markElements(node);
+              }
+            });
+          });
+        });
+        if (document.body) {
+          obs.observe(document.body, { childList: true, subtree: true });
+        }
+      })();
+    `;
+    document.head.appendChild(script);
+  }
+
   // Define init callback
   window.googleTranslateElementInit = () => {
     initWidget();
@@ -114,9 +161,7 @@ function ensureGoogleTranslate() {
   script.id = "aetheris-gt-script";
   script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
   script.async = true;
-  script.onerror = () => {
-    // Network blocked - silently degrade
-  };
+  script.onerror = () => {};
   document.head.appendChild(script);
 }
 
@@ -125,7 +170,6 @@ function initWidget() {
   try {
     const container = document.getElementById("aetheris-gt-container");
     if (!container) return;
-    // Prevent double init
     if (container.querySelector("iframe")) return;
 
     const TE = window.google.translate.TranslateElement;
@@ -150,17 +194,13 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Mount: read current language and load Google Translate
   useEffect(() => {
     const lang = getCurrentLang();
     setActive(lang);
     setMounted(true);
-
-    // Load Google Translate widget (it will translate based on cookie)
     ensureGoogleTranslate();
   }, []);
 
-  // Click outside to close
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -175,14 +215,12 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
   function selectLang(code: string) {
     setOpen(false);
     if (code === active) return;
-
     if (code === "en") {
       deleteAllGoogtrans();
     } else {
       setCookie("googtrans", `/en/${code}`, 365);
     }
     setActive(code);
-    // Reload to let Google Translate pick up the new cookie
     setTimeout(() => window.location.reload(), 100);
   }
 
@@ -190,14 +228,19 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
   const isTranslated = mounted && active !== "en";
 
   return (
-    <div ref={wrapperRef} className={`relative inline-block ${className}`}>
+    <div
+      ref={wrapperRef}
+      className={`notranslate relative inline-block ${className}`}
+      translate="no"
+      data-notranslate="true"
+    >
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="aetheris-btn-secondary relative inline-flex h-8 items-center gap-1.5 px-3 text-xs"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Language — ${activeLang.label}`}
+        aria-label={`Language - ${activeLang.label}`}
       >
         <Globe className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="text-[11px] font-semibold uppercase tracking-wider text-ink">
@@ -259,7 +302,6 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
         </div>
       )}
 
-      {/* Hidden container for Google Translate widget */}
       <div id="aetheris-gt-container" style={{ position: "fixed", left: "-9999px", top: "-9999px", width: 0, height: 0, overflow: "hidden", pointerEvents: "none" }} />
     </div>
   );

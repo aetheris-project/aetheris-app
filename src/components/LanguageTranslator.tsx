@@ -186,7 +186,7 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
     setTimeout(() => window.location.reload(), 100);
   }
 
-  const activeLang = mounted ? LANGUAGES.find((l) => l.code === active) ?? LANGUAGES[0] : LANGUAGES[0];
+  const activeLang = LANGUAGES.find((l) => l.code === active) ?? LANGUAGES[0];
   const isTranslated = mounted && active !== "en";
 
   return (

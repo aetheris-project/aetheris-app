@@ -6,182 +6,187 @@ import { Globe, Check } from "lucide-react";
 const LANGUAGES = [
   { code: "en", label: "English", flag: "EN", native: "English" },
   { code: "it", label: "Italian", flag: "IT", native: "Italiano" },
-  { code: "es", label: "Spanish", flag: "ES", native: "Español" },
-  { code: "fr", label: "French", flag: "FR", native: "Français" },
+  { code: "es", label: "Spanish", flag: "ES", native: "Espanol" },
+  { code: "fr", label: "French", flag: "FR", native: "Francais" },
   { code: "de", label: "German", flag: "DE", native: "Deutsch" },
-  { code: "pt", label: "Portuguese", flag: "PT", native: "Português" },
+  { code: "pt", label: "Portuguese", flag: "PT", native: "Portugues" },
   { code: "nl", label: "Dutch", flag: "NL", native: "Nederlands" },
   { code: "pl", label: "Polish", flag: "PL", native: "Polski" },
-  { code: "ru", label: "Russian", flag: "RU", native: "Русский" },
-  { code: "ja", label: "Japanese", flag: "JA", native: "日本語" },
-  { code: "zh-CN", label: "Chinese (Simplified)", flag: "ZH", native: "中文（简体）" },
-  { code: "ko", label: "Korean", flag: "KO", native: "한국어" },
+  { code: "ru", label: "Russian", flag: "RU", native: "\u0420\u0443\u0441\u0441\u043a\u0438\u0439" },
+  { code: "ja", label: "Japanese", flag: "JA", native: "\u65e5\u672c\u8a9e" },
+  { code: "zh-CN", label: "Chinese", flag: "ZH", native: "\u4e2d\u6587" },
+  { code: "ko", label: "Korean", flag: "KO", native: "\ud55c\uad6d\uc5b4" }
 ];
 
-const INCLUDED_LANGS = LANGUAGES.map((l) => l.code).join(",");
-
-function getLangFromCookie(): string | null {
+function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
-  const m = document.cookie.match(/googtrans=\/en\/([a-zA-Z-]+)/i);
-  if (!m) return null;
-  const captured = m[1] ?? "en";
-  const raw = captured.toLowerCase();
-  return LANGUAGES.some((l) => l.code.toLowerCase() === raw) ? captured : "en";
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
-function writeLangCookie(code: string) {
+function setCookie(name: string, value: string, days: number) {
   if (typeof document === "undefined") return;
-  const value = code === "en" ? "" : `/en/${code}`;
-  const base = `googtrans=${value}; path=/; SameSite=Lax; max-age=31536000`;
-  document.cookie = base;
-  try {
-    const host = window.location.hostname;
-    if (host) document.cookie = `${base}; domain=.${host}`;
-    if (host.endsWith(".vercel.app")) document.cookie = `${base}; domain=.vercel.app`;
-  } catch {
-    /* ignore */
-  }
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
 }
 
-function clearAllCookies() {
+function deleteAllGoogtrans() {
   if (typeof document === "undefined") return;
-  const hosts = [""];
-  try {
-    const h = window.location.hostname;
-    if (h) hosts.push(`.${h}`);
-    if (h && h.endsWith(".vercel.app")) hosts.push(".vercel.app");
-  } catch {
-    /* ignore */
-  }
-  for (const domain of hosts) {
+  const domains = ["", `.${window.location.hostname}`];
+  if (window.location.hostname.endsWith(".vercel.app")) domains.push(".vercel.app");
+  for (const domain of domains) {
     for (const path of ["/", ""]) {
       document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${path}${domain ? `; domain=${domain}` : ""}`;
     }
   }
 }
 
+function getCurrentLang(): string {
+  const cookie = getCookie("googtrans");
+  if (!cookie) return "en";
+  const match = cookie.match(/\/en\/([a-zA-Z-]+)/);
+  if (match) {
+    const code = match[1];
+    if (LANGUAGES.some((l) => l.code === code)) return code;
+  }
+  return "en";
+}
+
 declare global {
   interface Window {
-    google: unknown;
+    google?: {
+      translate?: {
+        TranslateElement?: new (options: object, id: string) => void;
+      };
+    };
     googleTranslateElementInit?: () => void;
   }
 }
 
-export function LanguageTranslator({ className = "" }: { className?: string }) {
-  const [active, setActive] = useState<string>(() => getLangFromCookie() ?? "en");
-  const [open, setOpen] = useState(false);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const inited = useRef(false);
+/**
+ * Load the Google Translate script and initialize the hidden widget.
+ * The widget reads the googtrans cookie on load and translates the page.
+ */
+function ensureGoogleTranslate() {
+  if (typeof document === "undefined") return;
 
-  useEffect(() => {
-    if (inited.current) return;
-    if (typeof window === "undefined") return;
-    inited.current = true;
-
-    const inject = () => {
-      window.googleTranslateElementInit = () => {
-        try {
-          const gw = window as {
-            google: {
-              translate: {
-                TranslateElement: new (
-                  opts: unknown,
-                  id: string
-                ) => void;
-              } & Record<string, unknown>;
-            };
-          };
-          const Te = (gw.google.translate as Record<string, unknown>).TranslateElement as
-            | (new (opts: unknown, id: string) => void) & {
-                InlineLayout?: { SIMPLE: unknown };
-              }
-            | undefined;
-          if (!Te) return;
-          const layoutVal = (Te.InlineLayout?.SIMPLE as number | undefined) ?? 0;
-          new Te(
-            {
-              pageLanguage: "en",
-              includedLanguages: INCLUDED_LANGS,
-              layout: layoutVal,
-              autoDisplay: false,
-              multilanguagePage: true,
-            },
-            "aetheris-google-translate-element"
-          );
-        } catch {
-          /* ignore init failures */
-        }
-      };
-
-      if (document.getElementById("aetheris-gt-script")) return;
-      const s = document.createElement("script");
-      s.id = "aetheris-gt-script";
-      s.src =
-        "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      s.async = true;
-      s.defer = true;
-      s.onerror = () => {
-        /* network blocked; component silently degrades */
-      };
-      document.head.appendChild(s);
-    };
-
-    const mountStyle = () => {
-      if (document.getElementById("aetheris-gt-style")) return;
-      const style = document.createElement("style");
-      style.id = "aetheris-gt-style";
-      style.textContent = `
-        #aetheris-google-translate-element { display:none !important; position: fixed !important; left:-9999px !important; top:-9999px !important; width:0; height:0; overflow:hidden; pointer-events:none; }
-        .goog-te-banner-frame { display:none !important; }
-        body { top:0 !important; }
-        .goog-te-balloon-frame { display:none !important; }
-        font[class^="goog-te"] { background:transparent !important; }
-      `;
-      document.head.appendChild(style);
-    };
-
-    if (!document.getElementById("aetheris-google-translate-element")) {
-      const el = document.createElement("div");
-      el.id = "aetheris-google-translate-element";
-      document.body.appendChild(el);
+  // Already loaded
+  if (document.getElementById("aetheris-gt-script")) {
+    // Re-init if widget not yet created
+    if (window.google?.translate?.TranslateElement) {
+      initWidget();
     }
-    mountStyle();
-    inject();
+    return;
+  }
+
+  // Create hidden container
+  if (!document.getElementById("aetheris-gt-container")) {
+    const el = document.createElement("div");
+    el.id = "aetheris-gt-container";
+    el.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:0;height:0;overflow:hidden;pointer-events:none;";
+    document.body.appendChild(el);
+  }
+
+  // Style overrides to hide Google Translate UI
+  if (!document.getElementById("aetheris-gt-style")) {
+    const style = document.createElement("style");
+    style.id = "aetheris-gt-style";
+    style.textContent = `
+      .goog-te-banner-frame, .goog-te-banner-framebody,
+      .goog-te-balloon-frame, .goog-te-spinner,
+      body > .skiptranslate { display:none !important; visibility:hidden !important; height:0 !important; width:0 !important; overflow:hidden !important; position:absolute !important; left:-9999px !important; top:-9999px !important; pointer-events:none !important; }
+      html { top:0 !important; }
+      body { top:0 !important; margin-top:0 !important; }
+      .goog-te-banner-frame + body { top:0 !important; margin-top:0 !important; }
+      font[class^="goog-te"] { background:transparent !important; font-family:inherit !important; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Define init callback
+  window.googleTranslateElementInit = () => {
+    initWidget();
+  };
+
+  // Load the script
+  const script = document.createElement("script");
+  script.id = "aetheris-gt-script";
+  script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  script.async = true;
+  script.onerror = () => {
+    // Network blocked - silently degrade
+  };
+  document.head.appendChild(script);
+}
+
+function initWidget() {
+  if (!window.google?.translate?.TranslateElement) return;
+  try {
+    const container = document.getElementById("aetheris-gt-container");
+    if (!container) return;
+    // Prevent double init
+    if (container.querySelector("iframe")) return;
+
+    const TE = window.google.translate.TranslateElement as any;
+    new TE(
+      {
+        pageLanguage: "en",
+        includedLanguages: LANGUAGES.map((l) => l.code).join(","),
+        layout: TE.InlineLayout?.SIMPLE ?? 0,
+        autoDisplay: false,
+        multilanguagePage: true
+      },
+      "aetheris-gt-container"
+    );
+  } catch {
+    // Widget init errors are non-fatal
+  }
+}
+
+export function LanguageTranslator({ className = "" }: { className?: string }) {
+  const [active, setActive] = useState("en");
+  const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Mount: read current language and load Google Translate
+  useEffect(() => {
+    const lang = getCurrentLang();
+    setActive(lang);
+    setMounted(true);
+
+    // Load Google Translate widget (it will translate based on cookie)
+    ensureGoogleTranslate();
   }, []);
 
+  // Click outside to close
   useEffect(() => {
+    if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (!wrapperRef.current) return;
-      if (!wrapperRef.current.contains(e.target as Node)) setOpen(false);
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [open]);
 
-  const doSelect = (code: string) => {
-    setActive(code);
+  function selectLang(code: string) {
     setOpen(false);
-    clearAllCookies();
-    if (code !== "en") writeLangCookie(code);
-    setTimeout(() => {
-      try {
-        const combo = document.querySelector(".goog-te-combo") as HTMLSelectElement | null;
-        if (combo) {
-          combo.value = code;
-          combo.dispatchEvent(new Event("change"));
-        } else if (code !== "en") {
-          // Widget combo not ready yet — let cookie drive the next reload.
-          window.location.reload();
-        }
-      } catch {
-        /* ignore */
-      }
-    }, code === "en" ? 0 : 120);
-    if (code === "en") setTimeout(() => window.location.reload(), 60);
-  };
+    if (code === active) return;
 
-  const activeLang = LANGUAGES.find((l) => l.code.toLowerCase() === active.toLowerCase());
-  const isTranslated = active.toLowerCase() !== "en";
+    if (code === "en") {
+      deleteAllGoogtrans();
+    } else {
+      setCookie("googtrans", `/en/${code}`, 365);
+    }
+    setActive(code);
+    // Reload to let Google Translate pick up the new cookie
+    setTimeout(() => window.location.reload(), 100);
+  }
+
+  const activeLang = mounted ? LANGUAGES.find((l) => l.code === active) ?? LANGUAGES[0] : LANGUAGES[0];
+  const isTranslated = mounted && active !== "en";
 
   return (
     <div ref={wrapperRef} className={`relative inline-block ${className}`}>
@@ -191,11 +196,11 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
         className="aetheris-btn-secondary relative inline-flex h-8 items-center gap-1.5 px-3 text-xs"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Language — ${activeLang?.label ?? "English"}`}
+        aria-label={`Language — ${activeLang.label}`}
       >
         <Globe className="h-3.5 w-3.5" aria-hidden="true" />
         <span className="text-[11px] font-semibold uppercase tracking-wider text-ink">
-          {activeLang?.flag ?? "EN"}
+          {activeLang.flag}
         </span>
         {isTranslated && (
           <span className="absolute -right-0.5 -top-0.5 flex h-2 w-2">
@@ -217,25 +222,21 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
             <Globe className="h-4 w-4 text-accent" />
           </div>
 
-          <ul
-            role="listbox"
-            className="scrollbar-thin max-h-72 overflow-y-auto py-1"
-            aria-label="Language selector"
-          >
+          <ul role="listbox" className="max-h-72 overflow-y-auto py-1" aria-label="Language selector">
             {LANGUAGES.map((lang) => {
-              const isActive = lang.code.toLowerCase() === active.toLowerCase();
+              const isActive = lang.code === active;
               return (
                 <li key={lang.code}>
                   <button
                     type="button"
-                    onClick={() => doSelect(lang.code)}
+                    onClick={() => selectLang(lang.code)}
                     role="option"
                     aria-selected={isActive}
                     className="flex w-full items-center justify-between gap-3 px-3.5 py-2 text-left transition-colors hover:bg-accent/10"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="inline-flex h-5 min-w-[2rem] items-center justify-center rounded bg-surface px-1 text-[10px] font-bold uppercase tracking-wider text-muted ring-1 ring-edge">
+                        <span className={`inline-flex h-5 min-w-[2rem] items-center justify-center rounded px-1 text-[10px] font-bold uppercase tracking-wider ring-1 ring-edge ${isActive ? "bg-accent/20 text-accent" : "bg-surface text-muted"}`}>
                           {lang.flag}
                         </span>
                         <span className={`text-sm font-medium ${isActive ? "text-accent" : "text-ink"}`}>
@@ -244,9 +245,7 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
                       </div>
                       <div className="mt-0.5 pl-9 text-[11px] text-faint">{lang.label}</div>
                     </div>
-                    {isActive ? (
-                      <Check className="h-4 w-4 flex-none text-accent" aria-hidden="true" />
-                    ) : null}
+                    {isActive && <Check className="h-4 w-4 flex-none text-accent" aria-hidden="true" />}
                   </button>
                 </li>
               );
@@ -254,11 +253,13 @@ export function LanguageTranslator({ className = "" }: { className?: string }) {
           </ul>
 
           <div className="border-t border-edge bg-surface/60 px-3.5 py-2.5 text-[10.5px] leading-4 text-faint">
-            <span className="font-semibold text-warning">Note:</span> automatic translation may
-            contain inaccuracies. Refer to the English UI for precise technical wording.
+            <span className="font-semibold text-warning">Note:</span> automatic translation may contain inaccuracies.
           </div>
         </div>
       )}
+
+      {/* Hidden container for Google Translate widget */}
+      <div id="aetheris-gt-container" style={{ position: "fixed", left: "-9999px", top: "-9999px", width: 0, height: 0, overflow: "hidden", pointerEvents: "none" }} />
     </div>
   );
 }
